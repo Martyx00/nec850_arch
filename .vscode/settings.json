@@ -1,0 +1,25 @@
+{
+    "files.associations": {
+        "cstdlib": "c",
+        "array": "c",
+        "bitset": "c",
+        "string_view": "c",
+        "format": "c",
+        "initializer_list": "c",
+        "span": "c",
+        "regex": "c",
+        "disass.h": "c",
+        "stdio.h": "c",
+        "charconv": "c",
+        "chrono": "c",
+        "optional": "c",
+        "ratio": "c",
+        "system_error": "c",
+        "functional": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "any": "c",
+        "complex": "c"
+    }
+}
