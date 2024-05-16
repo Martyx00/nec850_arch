@@ -1,6 +1,8 @@
 #include <stdint.h>
 
-
+#ifdef __cplusplus
+  extern "C" {
+#endif
 enum insn_id {
     N850_ADD,
     N850_ADD_IMM,
@@ -223,3 +225,9 @@ typedef struct {
   enum op_type op_type;
   enum op_condition cond;
 } insn_t;
+
+insn_t *disassemble(const uint8_t *in_buffer);
+
+#ifdef __cplusplus
+}
+#endif

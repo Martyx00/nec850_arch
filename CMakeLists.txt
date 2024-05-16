@@ -22,7 +22,7 @@
 
 cmake_minimum_required(VERSION 3.24)
 set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
-project(TestPlugin CXX C)
+project(nec850_arch CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -36,7 +36,7 @@ find_path(
 )
 add_subdirectory(${BN_API_PATH} api)
 
-add_library(${PROJECT_NAME} SHARED rh850.cpp disass.c )
+add_library(${PROJECT_NAME} SHARED nec850.cpp disass.c )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC binaryninjaapi)
 

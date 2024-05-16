@@ -185,7 +185,7 @@ const disass_insn_t instruction_list[] = {
 };
 
 
-static insn_t *disassemble(uint8_t *in_buffer) {
+insn_t *disassemble(const uint8_t *in_buffer) {
     insn_t* ret_val = malloc(sizeof(insn_t));
     uint64_t data;
     uint8_t had_partials = 0;
@@ -258,10 +258,10 @@ static insn_t *disassemble(uint8_t *in_buffer) {
                     ret_val->fields[op_index].value = (ret_val->fields[op_index].value ^ m) - m;
                 }
             }
-            break;
+            return ret_val;
         }
     }
-    return ret_val;
+    return NULL;
 }
 
 /*
