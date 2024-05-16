@@ -317,8 +317,10 @@ class NEC850: public Architecture
 			if (insn = disassemble(data)) {
 				len = insn->size;
 				il.AddInstruction(il.Unimplemented());
+				free(insn);
 				return true;
 			}
+			free(insn);
 			return false;
 		}
 
@@ -327,12 +329,21 @@ class NEC850: public Architecture
 		{
 			insn_t* insn;
 			if (insn = disassemble(data)) {
-				LogInfo("GOT %s",insn->name);
 				result.length = insn->size;
 				uint32_t target;
 				switch(insn->op_type) {
 					case OP_TYPE_JMP:
-                        result.AddBranch(UnconditionalBranch,(insn->fields[0].value));// + (uint32_t) addr) & 0xffffffff);
+                        result.AddBranch(UnconditionalBranch,(insn->fields[0].value + (uint32_t) addr) & 0xffffffff);
+                        break;
+					case OP_TYPE_CJMP:
+						target = (insn->fields[0].value + (uint32_t) addr) & 0xffffffff;
+                        if (insn->fields[0].type == TYPE_JMP) {
+                            result.AddBranch(TrueBranch, target);// + (uint32_t) addr) & 0xffffffff);
+                            result.AddBranch(FalseBranch,(insn->size + addr) & 0xffffffff);
+                        } else {
+							LogInfo("CJMP WENT WRONG AT 0x%x",addr);
+                            return false;
+                        }
                         break;
 					case OP_TYPE_CALL:
                         target = (insn->fields[0].value + (uint32_t) addr) & 0xffffffff;
@@ -354,8 +365,10 @@ class NEC850: public Architecture
 					default:
                         break; 
 				}
+				free(insn);
 				return true;
 			}
+			free(insn);
 			return false;
 		}
 
@@ -364,6 +377,7 @@ class NEC850: public Architecture
 			insn_t* insn;
 			char tmp[256] = {0};
 			if (insn = disassemble(data)) {
+				
 				int name_len = strlen(insn->name);
                 for (int i = name_len; i < 8; i++) {
                     tmp[i - name_len] = ' ';
@@ -377,8 +391,8 @@ class NEC850: public Architecture
 				for (int op_index = 0; op_index < insn->n; op_index++) {
                     switch(insn->fields[op_index].type) {
                         case TYPE_REG:
-                            sprintf(reg_str, "r%d", (uint32_t)insn->fields[op_index].value); 
-                            result.emplace_back(RegisterToken, reg_str);
+                            //sprintf(reg_str, "r%d", (uint32_t)insn->fields[op_index].value);
+                            result.emplace_back(RegisterToken, reg_name[insn->fields[op_index].value]);
                             break;
                         case TYPE_MEM: // TODO
 						case TYPE_IMM:
@@ -399,8 +413,10 @@ class NEC850: public Architecture
                     result.emplace_back(OperandSeparatorToken, ", ");
                 }
                 result.pop_back();
+				free(insn);
 				return true;
 			}
+			free(insn);
 			return false;
 		}
 
@@ -425,10 +441,32 @@ class Nec850CallingConvention: public CallingConvention
 			return NEC_REG_R10;
 		}
 
+		virtual vector<uint32_t> GetCallerSavedRegisters() override
+		{
+			return vector<uint32_t>{
+				NEC_REG_R10, NEC_REG_R11, NEC_REG_R12, NEC_REG_R13, NEC_REG_R14, NEC_REG_R15, NEC_REG_R16, NEC_REG_R17, NEC_REG_R18, NEC_REG_R19
+			};
+		}
+
+		virtual vector<uint32_t> GetCalleeSavedRegisters() override
+		{
+			return vector<uint32_t>{
+				NEC_REG_R25, NEC_REG_R25, NEC_REG_R27, NEC_REG_R28, NEC_REG_EP, NEC_REG_LP
+			};
+		}
+
 };
 extern "C"
 {
 	BN_DECLARE_CORE_ABI_VERSION
+
+	BINARYNINJAPLUGIN void CorePluginDependencies()
+	{
+		AddOptionalPluginDependency("view_elf");
+		AddOptionalPluginDependency("view_macho");
+		AddOptionalPluginDependency("view_pe");
+	}
+
 	BINARYNINJAPLUGIN bool CorePluginInit()
 		{
 
@@ -441,7 +479,6 @@ extern "C"
 			nec850->SetDefaultCallingConvention(conv);
 
 			#define EM_NEC850		87
-			
 			BinaryViewType::RegisterArchitecture(
 				"ELF", 
 				EM_NEC850, 

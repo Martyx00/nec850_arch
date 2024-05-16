@@ -1,6 +1,7 @@
 #include "disass.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct {
   uint64_t mask;
@@ -55,7 +56,7 @@ const disass_insn_t instruction_list[] = {
     { "ei"   , N850_EI     ,    4, 0x87e00160  , 0x87e00160  , 0,   OP_TYPE_RET, COND_NV, {{0}, {0}, {0}, {0}, {0}}},
     { "halt"   , N850_HALT     ,    4, 0x7e00120  , 0x7e00120  , 0,   OP_TYPE_RET, COND_NV, {{0}, {0}, {0}, {0}, {0}}},
     { "hsw"   , N850_HSW     ,    4, 0xfffe0fb44  , 0x7e00344  , 2,   OP_TYPE_MOV, COND_NV, {{0xF8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x0000F800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
-    { "jr"   , N850_JR     ,    4, 0x07bffffe  , 0x07800000  , 1,   OP_TYPE_JMP, COND_NV, {{0x003fffff,  0,  0,  0, 22, SIGNED, 0, TYPE_MEM}, {0}, {0}, {0},{0}}},
+    { "jr"   , N850_JR     ,    4, 0x07bffffe  , 0x07800000  , 1,   OP_TYPE_JMP, COND_NV, {{0x003fffff,  0,  0,  0, 22, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0},{0}}},
     { "jarl"   , N850_JARL     ,    4, 0xffbffffe  , 0x7800000  , 2,   OP_TYPE_CALL, COND_NV, {{0xF8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x003fffff,  0,  0,  0, 22, SIGNED, 0, TYPE_MEM}, {0}, {0}, {0}}},
     { "ld.b"   , N850_LDB     ,    4, 0xff1fffff  , 0x7000000  , 3,   OP_TYPE_LOAD, COND_NV, {{0xF8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000FFFF,  0,  0,  0, 16, SIGNED, 0, TYPE_MEM}, {0}, {0}}},
     { "ld.bu"   , N850_LDBU     ,    4, 0xffbfffff  , 0x7800000  , 3,   OP_TYPE_LOAD, COND_NV, {{0xF8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000FFFE,  0,  0,  0, 15, SIGNED, 0, TYPE_MEM}, {0x00200000,  21,  0,  0, 1, UNSIGNED, 0, TYPE_MEM}, {0}}},
@@ -122,26 +123,26 @@ const disass_insn_t instruction_list[] = {
     { "add"   , N850_ADD     ,    2, 0xF9DF    , 0x01c0       , 2,   OP_TYPE_ADD, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0xf800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
     { "add"   , N850_ADD_IMM ,    2, 0xFA5F    , 0x0240       , 2,   OP_TYPE_ADD, COND_NV, {{0x001f,  0,  0,  0, 5, SIGNED, 0, TYPE_IMM}, {0xf800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
     { "and"   , N850_AND     ,    2, 0xF95F    , 0x0140       , 2,   OP_TYPE_AND, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0xf800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
-    { "bge"   , N850_BGE     ,    2, 0xFDFE    , 0x058E       , 1,   OP_TYPE_CJMP, COND_GE, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "bgt"   , N850_BGT     ,    2, 0xFDFF    , 0x058E       , 1,   OP_TYPE_CJMP, COND_GT, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "ble"   , N850_BLE     ,    2, 0xFDF7    , 0x058E       , 1,   OP_TYPE_CJMP, COND_LE, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "blt"   , N850_BLT     ,    2, 0xFDF6    , 0x058E       , 1,   OP_TYPE_CJMP, COND_LT, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "bh"   , N850_BH     ,    2, 0xFDFB    , 0x058E       , 1,   OP_TYPE_CJMP, COND_H, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "bl"   , N850_BL     ,    2, 0xFDF1    , 0x058E       , 1,   OP_TYPE_CJMP, COND_L, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "bnh"   , N850_BNH     ,    2, 0xFDF1    , 0x058E       , 1,   OP_TYPE_CJMP, COND_NH, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "bnl"   , N850_BNL     ,    2, 0xFDF9    , 0x058E       , 1,   OP_TYPE_CJMP, COND_NL, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "be"   , N850_BE     ,    2, 0xFDF2    , 0x058E       , 1,   OP_TYPE_CJMP, COND_EQ, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "bne"   , N850_BNE     ,    2, 0xFDFA    , 0x058E       , 1,   OP_TYPE_CJMP, COND_NE, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "bc"   , N850_BC     ,    2, 0xFDF1    , 0x058E       , 1,   OP_TYPE_CJMP, COND_CA, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "bn"   , N850_BN     ,    2, 0xFDF4    , 0x058E       , 1,   OP_TYPE_CJMP, COND_NEG, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "bnc"   , N850_BNC     ,    2, 0xFDF9    , 0x058E       , 1,   OP_TYPE_CJMP, COND_NCA, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "bnv"   , N850_BNV     ,    2, 0xFDF8    , 0x058E       , 1,   OP_TYPE_CJMP, COND_NOF, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "bnz"   , N850_BNZ     ,    2, 0xFDFA    , 0x058E       , 1,   OP_TYPE_CJMP, COND_NZ, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "bp"   , N850_BP     ,    2, 0xFDFC    , 0x058E       , 1,   OP_TYPE_CJMP, COND_POS, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "br"   , N850_BR     ,    2, 0xFDF5    , 0x058E       , 1,   OP_TYPE_CJMP, COND_NV, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "bsa"   , N850_BSA     ,    2, 0xFDFD    , 0x058E       , 1,   OP_TYPE_CJMP, COND_SAT, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "bv"   , N850_BV     ,    2, 0xFDF0    , 0x058E       , 1,   OP_TYPE_CJMP, COND_OF, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    { "bz"   , N850_BZ     ,    2, 0xFDF2    , 0x058E       , 1,   OP_TYPE_CJMP, COND_ZERO, {{0x0070,  3,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bge"   , N850_BGE     ,    2, 0xFDFE    , 0x058E       , 1,   OP_TYPE_CJMP, COND_GE, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bgt"   , N850_BGT     ,    2, 0xFDFF    , 0x058F       , 1,   OP_TYPE_CJMP, COND_GT, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "ble"   , N850_BLE     ,    2, 0xFDF7    , 0x0587       , 1,   OP_TYPE_CJMP, COND_LE, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "blt"   , N850_BLT     ,    2, 0xFDF6    , 0x0586       , 1,   OP_TYPE_CJMP, COND_LT, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bh"   , N850_BH     ,    2, 0xFDFB    , 0x058B       , 1,   OP_TYPE_CJMP, COND_H, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bl"   , N850_BL     ,    2, 0xFDF1    , 0x0581       , 1,   OP_TYPE_CJMP, COND_L, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bnh"   , N850_BNH     ,    2, 0xFDF3    , 0x0583       , 1,   OP_TYPE_CJMP, COND_NH, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bnl"   , N850_BNL     ,    2, 0xFDF9    , 0x0589       , 1,   OP_TYPE_CJMP, COND_NL, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "be"   , N850_BE     ,    2, 0xFDF2    , 0x0582       , 1,   OP_TYPE_CJMP, COND_EQ, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bne"   , N850_BNE     ,    2, 0xFDFA    , 0x058A       , 1,   OP_TYPE_CJMP, COND_NE, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bc"   , N850_BC     ,    2, 0xFDF1    , 0x0581       , 1,   OP_TYPE_CJMP, COND_CA, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bn"   , N850_BN     ,    2, 0xFDF4    , 0x0584       , 1,   OP_TYPE_CJMP, COND_NEG, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bnc"   , N850_BNC     ,    2, 0xFDF9    , 0x0589       , 1,   OP_TYPE_CJMP, COND_NCA, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bnv"   , N850_BNV     ,    2, 0xFDF8    , 0x0588       , 1,   OP_TYPE_CJMP, COND_NOF, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bnz"   , N850_BNZ     ,    2, 0xFDFA    , 0x058A       , 1,   OP_TYPE_CJMP, COND_NZ, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bp"   , N850_BP     ,    2, 0xFDFC    , 0x058C       , 1,   OP_TYPE_CJMP, COND_POS, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "br"   , N850_BR     ,    2, 0xFDF5    , 0x0585       , 1,   OP_TYPE_CJMP, COND_NV, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bsa"   , N850_BSA     ,    2, 0xFDFD    , 0x058D       , 1,   OP_TYPE_CJMP, COND_SAT, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bv"   , N850_BV     ,    2, 0xFDF0    , 0x0580       , 1,   OP_TYPE_CJMP, COND_OF, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
+    { "bz"   , N850_BZ     ,    2, 0xFDF2    , 0x0582       , 1,   OP_TYPE_CJMP, COND_ZERO, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
     { "callt"   , N850_CALLT     ,    2, 0x23f    , 0x0200       , 1,   OP_TYPE_CALL, COND_NV, {{0x003f,  0,  1,  0, 6, UNSIGNED, 0, TYPE_JMP}, {0}, {0}, {0}, {0}}},
     { "cmp"   , N850_CMP     ,    2, 0xF9FF    , 0x01E0       , 2,   OP_TYPE_CMP, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0xf800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
     { "cmp"   , N850_CMPI ,    2, 0xFA7F    , 0x0260       , 2,   OP_TYPE_CMP, COND_NV, {{0x001f,  0,  0,  0, 5, SIGNED, 0, TYPE_IMM}, {0xf800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
@@ -187,6 +188,7 @@ const disass_insn_t instruction_list[] = {
 
 insn_t *disassemble(const uint8_t *in_buffer) {
     insn_t* ret_val = malloc(sizeof(insn_t));
+    memset(ret_val,0,sizeof(insn_t));
     uint64_t data;
     uint8_t had_partials = 0;
     const disass_insn_t* current_insn;
@@ -245,16 +247,15 @@ insn_t *disassemble(const uint8_t *in_buffer) {
                 ret_val->fields[real_op_index].value |= tmp_value;
                 ret_val->fields[real_op_index].type = current_insn->fields[op_index].type;
                 ret_val->fields[real_op_index].size += current_insn->fields[op_index].size;
-                ret_val->fields[real_op_index].size = current_insn->fields[op_index].sign;
+                ret_val->fields[real_op_index].sign = current_insn->fields[op_index].sign;
                 // Convert to little endian
                 
                 //printf("GOT %ld\n",ret_val->fields[real_op_index].value);
             }
             for (int op_index = 0; op_index < 5; op_index++)
             {
-                if (ret_val->fields[op_index].type == TYPE_IMM && ret_val->fields[op_index].sign == SIGNED) {
+                if ((ret_val->fields[op_index].type == TYPE_IMM || ret_val->fields[op_index].type == TYPE_JMP) && ret_val->fields[op_index].sign == SIGNED) {
                     int64_t m = 1UL << (ret_val->fields[op_index].size - 1);
-                    
                     ret_val->fields[op_index].value = (ret_val->fields[op_index].value ^ m) - m;
                 }
             }
@@ -312,7 +313,7 @@ int main() {
     uint8_t test7[] = {0x9e,0x0d,0x63,0x00};
     pretty_print(disassemble(test7));
     printf("=========================\n");
-    uint8_t test8[] = {0xF3 ,0x06 ,0x04 ,0xD7 ,0x0C ,0x00};
+    uint8_t test8[] = {0xCA ,0xFD};
     pretty_print(disassemble(test8));
     return 1;
 }
