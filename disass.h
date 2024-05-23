@@ -128,8 +128,6 @@ enum insn_id {
     N850_XORI,
     N850_ZXB,
     N850_ZXH,
-
-
 };
 
 enum op_type {

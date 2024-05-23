@@ -69,3 +69,4 @@
 #define FLAG_WRITE_NONE 5
 #define FLAG_WRITE_ALL 6
 #define FLAG_WRITE_OVSZ 7
+#define FLAG_WRITE_CYOVSZ 8
