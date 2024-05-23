@@ -262,8 +262,6 @@ public:
 			result = reg_name[regId];
 		else
 			result = "";
-
-		// MYLOG("%s(%d) returns %s\n", __func__, regId, result);
 		return result;
 	}
 
@@ -352,7 +350,6 @@ public:
 
 	virtual uint32_t GetLinkRegister() override
 	{
-		// MYLOG("%s()\n", __func__);
 		return NEC_REG_LP;
 	}
 	virtual bool GetInstructionLowLevelIL(const uint8_t *data, uint64_t addr, size_t &len, LowLevelILFunction &il) override
@@ -361,16 +358,21 @@ public:
 		if (insn = disassemble(data))
 		{
 			len = insn->size;
+			BNLowLevelILLabel *true_label = NULL;
+			BNLowLevelILLabel *false_label = NULL;
+			LowLevelILLabel true_tag;
+			LowLevelILLabel false_tag;
+			ExprId condition;
 			switch (insn->insn_id)
 			{
 			case N850_ADD:
 			{
-				if (addr == 0x000d0d0c) {
+				/*if (addr == 0x000d0d0c) {
 					LogInfo("%s AT 0x%x: N: %d", insn->name, (uint32_t)addr,insn->n);
 					LogInfo("%s OP[0] type: %d: value: %d", insn->name, insn->fields[0].type,insn->fields[0].value);
 					LogInfo("%s OP[1] type: %d: value: %d", insn->name, insn->fields[1].type,insn->fields[1].value);
 					LogInfo("%s OP[2] type: %d: value: %d", insn->name, insn->fields[2].type,insn->fields[2].value);
-				}
+				}*/
 				
 				il.AddInstruction(
 					il.SetRegister(
@@ -394,72 +396,370 @@ public:
 			break;
 			case N850_ADD_IMM:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Add(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.SignExtend(
+								4,
+								il.Const(
+									1,
+									insn->fields[0].value
+								)
+							),
+							FLAG_WRITE_CYOVSZ
+						)
+					)
+				);
 			}
 			break;
 			case N850_ADDI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.Add(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.SignExtend(
+								4,
+								il.Const(
+									2,
+									insn->fields[0].value
+								)
+							),
+							FLAG_WRITE_CYOVSZ
+						)
+					)
+				);
 			}
 			break;
 			case N850_AND:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.And(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.Register(
+								4,
+								insn->fields[0].value
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
 			}
 			break;
 			case N850_ANDI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.And(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.ZeroExtend(
+								4,
+								il.Const(
+									2,
+									insn->fields[0].value
+								)
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
 			}
 			break;
 			case N850_BGE:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_SGE);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BGT:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_SGT);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BLE:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_SLE);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BLT:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_SLT);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BH:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_UGT);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_ULT);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BNH:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_ULE);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BNL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_UGE);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BE:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_E);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BNE:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_NE);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BC:
@@ -469,7 +769,29 @@ public:
 			break;
 			case N850_BN:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_NEG);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BNC:
@@ -479,22 +801,88 @@ public:
 			break;
 			case N850_BNV:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_NO);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BNZ:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_NE);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BP:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_POS);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BR:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
 			}
 			break;
 			case N850_BSA:
@@ -504,12 +892,56 @@ public:
 			break;
 			case N850_BV:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_O);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BZ:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// True branch
+				true_label = il.GetLabelForAddress(this, insn->fields[0].value);
+				// False Branch
+				false_label = il.GetLabelForAddress(this, ((uint32_t) addr + insn->size));
+				condition = il.FlagCondition(LLFC_E);
+				if (true_label && false_label)
+					il.AddInstruction(il.If(condition,*true_label,*false_label));            
+				else if (true_label)
+					il.AddInstruction(il.If(condition,*true_label,false_tag));
+				else if (false_label)
+					il.AddInstruction(il.If(condition,true_tag,*false_label));
+				else
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+
+				if (!true_label) {
+					il.MarkLabel(true_tag);
+				}
+
+				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
+
+				if (!false_label) {
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_BSH:
@@ -549,12 +981,43 @@ public:
 			break;
 			case N850_CMP:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Sub(
+						4,
+						il.Register(
+							4,
+							insn->fields[1].value
+						),
+						il.Register(
+							4,
+							insn->fields[0].value
+						),
+						FLAG_WRITE_CYOVSZ
+
+					)
+				);
 			}
 			break;
 			case N850_CMPI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Sub(
+						4,
+						il.Register(
+							4,
+							insn->fields[1].value
+						),
+						il.SignExtend(
+							4,
+							il.Const(
+								1,
+								insn->fields[0].value
+							)
+						),
+						FLAG_WRITE_CYOVSZ
+
+					)
+				);
 			}
 			break;
 			case N850_CTRET:
@@ -634,7 +1097,12 @@ public:
 			break;
 			case N850_JMP:
 			{
-				il.AddInstruction(il.Unimplemented());
+				if (insn->fields[0].value == NEC_REG_LP) {
+					il.AddInstruction(il.Return(il.Register(4,NEC_REG_LP)));
+				} else {
+					il.AddInstruction(il.Jump(il.Register(4, insn->fields[0].value)));
+					il.MarkLabel(false_tag);
+				}
 			}
 			break;
 			case N850_JMPI:
@@ -649,12 +1117,62 @@ public:
 			break;
 			case N850_LDB:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.SignExtend(
+							4,
+							il.Load(
+								1,
+								il.Add(
+									4,
+									il.Register(
+										4,
+										insn->fields[1].value
+									),
+									il.SignExtend(
+										4,
+										il.Const(
+											2,
+											insn->fields[0].value
+										)
+									)
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_LDBU:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.ZeroExtend(
+							4,
+							il.Load(
+								1,
+								il.Add(
+									4,
+									il.Register(
+										4,
+										insn->fields[1].value
+									),
+									il.SignExtend(
+										4,
+										il.Const(
+											2,
+											insn->fields[0].value
+										)
+									)
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_LDH:
@@ -884,12 +1402,62 @@ public:
 			break;
 			case N850_SLDB:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.SignExtend(
+							4,
+							il.Load(
+								1,
+								il.Add(
+									4,
+									il.Register(
+										4,
+										NEC_REG_EP
+									),
+									il.ZeroExtend(
+										4,
+										il.Const(
+											1,
+											insn->fields[0].value
+										)
+									)
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_SLDBU:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.ZeroExtend(
+							4,
+							il.Load(
+								1,
+								il.Add(
+									4,
+									il.Register(
+										4,
+										NEC_REG_EP
+									),
+									il.ZeroExtend(
+										4,
+										il.Const(
+											1,
+											insn->fields[0].value
+										)
+									)
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_SLDH:
@@ -1029,12 +1597,36 @@ public:
 			break;
 			case N850_ZXB:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[0].value,
+						il.ZeroExtend(
+							4,
+							il.Register(
+								1,
+								insn->fields[0].value
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_ZXH:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[0].value,
+						il.ZeroExtend(
+							4,
+							il.Register(
+								2,
+								insn->fields[0].value
+							)
+						)
+					)
+				);
 			}
 			break;
 			default:
