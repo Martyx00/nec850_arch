@@ -15,8 +15,8 @@ static const char* reg_name[] = {
 	"r1",
 	"r2",
 	"sp",
-	"r4",
-	"r5",
+	"gp",
+	"tp",
 	"r6",
 	"r7",
 	"r8",
@@ -342,6 +342,7 @@ class NEC850: public Architecture
                             result.AddBranch(FalseBranch,(insn->size + addr) & 0xffffffff);
                         } else {
 							LogInfo("CJMP WENT WRONG AT 0x%x",addr);
+							free(insn);
                             return false;
                         }
                         break;
