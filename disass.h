@@ -4,8 +4,11 @@
   extern "C" {
 #endif
 enum insn_id {
+    N850_ABSFS,
     N850_ADD,
     N850_ADD_IMM,
+    N850_ADDFS,
+    N850_ADF,
     N850_ADDI,
     N850_AND,
     N850_ANDI,
@@ -30,13 +33,24 @@ enum insn_id {
     N850_BV,
     N850_BZ,
     N850_BSH,
+    N850_BINS,
+    N850_BINS2,
+    N850_BINS3,
     N850_BSW,
     N850_CALLT,
+    N850_CAXI,
+    N850_CEILFSL,
+    N850_CEILFSUL,
+    N850_CEILFSUW,
+    N850_CEILFSW,
+    N850_CLL,
     N850_CLR1,
     N850_CLR1R,
     N850_CMOV,
+    N850_CMOVFS,
     N850_CMOVI,
     N850_CMP,
+    N850_CMPFS,
     N850_CMPI,
     N850_CTRET,
     N850_DBRET,
@@ -53,6 +67,8 @@ enum insn_id {
     N850_HALT,
     N850_HSW,
     N850_JARL,
+    N850_JARL2,
+    N850_JARL3,
     N850_JMP,
     N850_JMPI,
     N850_JR,
@@ -138,7 +154,9 @@ enum op_type {
   TYPE_JMP  = 4,
   TYPE_CR   = 5,
   TYPE_LIST = 6,
-  TYPE_SYSREG = 7
+  TYPE_SYSREG = 7,
+  TYPE_EP = 8,
+  TYPE_REG_MEM = 9
 };
 
 enum insn_type {

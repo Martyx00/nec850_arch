@@ -55,9 +55,10 @@
 #define NEC_REG_R26 26
 #define NEC_REG_R27 27
 #define NEC_REG_R28 28
-#define NEC_REG_EP  29
-#define NEC_REG_LP  30
-#define NEC_REG_PC  31
+#define NEC_REG_R29 29
+#define NEC_REG_EP  30
+#define NEC_REG_LP  31
+#define NEC_REG_PC  32
 
 
 #define FLAG_SAT 0
