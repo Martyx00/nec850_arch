@@ -32,6 +32,21 @@ const disass_insn_t instruction_list[] = {
     // 6-byte insturctions
     { "mov"   , N850_MOVI     ,    6, 0x63fffffffff  , 0x62000000000  , 2,   OP_TYPE_MOV, COND_NV, {{0xffff0000,  16,  0,  0, 16, UNSIGNED, 0, TYPE_IMM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_IMM},{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG},  {0}, {0}}},
     { "jarl"   , N850_JARL2     ,    6, 0x2fffffeffff  , 0x2e000000000  , 2,   OP_TYPE_CALL, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xffff0000,  16,  0,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0}, {0}}},
+    // TODO check all these
+    { "jmp"   , N850_JMPI     ,    6, 0x6ffffffeffff    , 0x6E000000000       , 2,   OP_TYPE_RJMP, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xffff0000,  16,  0,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0}, {0}}},
+    { "jr"   , N850_JRL     ,    6, 0x2e0fffeffff    , 0x2e000000000      , 1,   OP_TYPE_JMP, COND_NV, {{0}, {0xffff0000,  16,  0,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0}, {0}}},
+    
+    { "ld.b"   , N850_LDBL     ,    6, 0x79FFFF5ffff    , 0x78000050000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x7fff0000,  20,  0,  0, 7, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
+    { "ld.bu"   , N850_LDBUL     ,    6, 0x7BFFFF5ffff    , 0x7A000050000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x7fff0000,  20,  0,  0, 7, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
+    { "ld.dw"   , N850_LDDW     ,    6, 0x7BFFFE9ffff    , 0x7A000090000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x7ffe0000,  20,  0,  0, 7, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
+    { "ld.h"   , N850_LDHL     ,    6, 0x79FFFE7ffff    , 0x78000070000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x7ffe0000,  20,  0,  0, 7, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
+    { "ld.hu"   , N850_LDHUL     ,    6, 0x7BFFFE7ffff    , 0x7A000070000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x7ffe0000,  20,  0,  0, 7, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
+    { "ld.w"   , N850_LDWL     ,    6, 0x79FFFE9ffff    , 0x78000090000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x7ffe0000,  20,  0,  0, 7, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
+    { "st.b"   , N850_STDL     ,    6, 0x79FFFFDffff    , 0x780000D0000     , 3,   OP_TYPE_STORE, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x7fff0000,  20,  0,  0, 7, UNSIGNED, 1, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 1, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}}},
+    { "st.dw"   , N850_STDW     ,    6, 0x7BFFFEfffff    , 0x7A0000F0000     , 3,   OP_TYPE_STORE, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x7ffe0000,  20,  0,  0, 7, UNSIGNED, 1, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 1, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}}},
+    { "st.h"   , N850_STHL     ,    6, 0x7BFFFEDffff    , 0x7A0000D0000     , 3,   OP_TYPE_STORE, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x7ffe0000,  20,  0,  0, 7, UNSIGNED, 1, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 1, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}}},
+    { "st.w"   , N850_STWL     ,    6, 0x79FFFEFffff    , 0x780000F0000     , 3,   OP_TYPE_STORE, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x7ffe0000,  20,  0,  0, 7, UNSIGNED, 1, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 1, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}}},
+
 
 
     // 4 byte insturctions
@@ -191,20 +206,26 @@ const disass_insn_t instruction_list[] = {
     { "tst1"   , N850_TST1     ,    4, 0xffdfffff  , 0xc7c00000  , 3,   OP_TYPE_NOT, COND_NV, {{0x38000000,  27,  0,  0, 3, UNSIGNED, 0, TYPE_IMM}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x0000FFFF,  0,  0,  0, 16, SIGNED, 1, TYPE_MEM}, {0}, {0}}},
     { "tst1"   , N850_TST1R     ,    4, 0xffff00e6  , 0x07e000e6  , 2,   OP_TYPE_NOT, COND_NV, {{0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
     { "xori"   , N850_XORI     ,    4, 0xfeBfffff  , 0x6A00000  , 3,   OP_TYPE_OR, COND_NV, {{0xF8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000FFFF,  0,  0,  0, 16, SIGNED, 0, TYPE_IMM}, {0}, {0}}},
-
-    // TODO check all these
-    { "jmp"   , N850_JMPI     ,    6, 0x6ffffffeffff    , 0x6E000000000       , 2,   OP_TYPE_RJMP, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xffff0000,  16,  0,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0}, {0}}},
-    { "jr"   , N850_JRL     ,    6, 0x2e0fffeffff    , 0x2e000000000      , 1,   OP_TYPE_JMP, COND_NV, {{0}, {0xffff0000,  16,  0,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0}, {0}}},
-    { "ld.b"   , N850_LDBL     ,    6, 0x79FFFF5ffff    , 0x78000050000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x7fff0000,  20,  0,  0, 7, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}}},
-    { "ld.bu"   , N850_LDBUL     ,    6, 0x7BFFFF5ffff    , 0x7A000050000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x7fff0000,  20,  0,  0, 7, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}}},
-    { "ld.dw"   , N850_LDDW     ,    6, 0x7BFFFE9ffff    , 0x7A000090000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x7ffe0000,  21,  0,  0, 6, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}}},
-
-
-
-
-
-
-
+    { "ldl.w"   , N850_LDLW    ,    4, 0x7FFFB78  , 0x7E00378  , 2,   OP_TYPE_NOT, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
+    { "loop"   , N850_LOOP    ,    4, 0x6FFFFFF  , 0x6E00001  , 2,   OP_TYPE_JMP, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x0000fffe,  0,  0,  0, 16, UNSIGNED, 1, TYPE_MEM}, {0}, {0}, {0}}},
+    { "mac"   , N850_MAC     ,    4, 0xfffff3de  , 0x7e0f3de  , 4,   OP_TYPE_MUL, COND_NV, {{0xF8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x000000FE,  1,  0,  0, 4, UNSIGNED, 0, TYPE_REG}, {0x00f000,  12,  0,  0, 4, UNSIGNED, 3, TYPE_REG}, {0}}},
+    { "macu"   , N850_MACU     ,    4, 0xfffff3fe  , 0x7e0f3fe  , 4,   OP_TYPE_MUL, COND_NV, {{0xF8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x000000FE,  1,  0,  0, 4, UNSIGNED, 0, TYPE_REG}, {0x00f000,  12,  0,  0, 4, UNSIGNED, 3, TYPE_REG}, {0}}},
+    { "popsp"   , N850_POPSP     ,    4, 0x67FFF960  , 0x67E00160  , 2,   OP_TYPE_MUL, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    { "pushsp"   , N850_PUSHSP     ,    4, 0x47FFF960  , 0x47E00160  , 2,   OP_TYPE_MUL, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    { "rie"   , N850_RIEI     ,    4, 0xffff0000  , 0x07f00000  , 2,   OP_TYPE_NOT, COND_NV, {{0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_IMM}, {0x000f0000,  16,  0,  0, 4, UNSIGNED, 0, TYPE_IMM}, {0}, {0}, {0}}},
+    { "rotl"   , N850_ROTL     ,    4, 0xfffff8c6  , 0x07e000c6  , 3,   OP_TYPE_NOT, COND_NV, {{0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
+    { "rotl"   , N850_ROTLI     ,    4, 0xfffff8c4  , 0x07e000c4  , 3,   OP_TYPE_NOT, COND_NV, {{0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_IMM}, {0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
+    { "satadd"   , N850_SATADDR     ,    4, 0xfffffBBA  , 0x07e003ba  , 3,   OP_TYPE_NOT, COND_NV, {{0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
+    { "satsub"   , N850_SATSUBL    ,    4, 0xfffffB9A  , 0x07e0039a  , 3,   OP_TYPE_NOT, COND_NV, {{0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
+    { "sbf"   , N850_SBF    ,    4, 0xffffFB9E  , 0x07e00380  , 4,   OP_TYPE_NOT, COND_NV, {{0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x0000001e,  1,  0,  0, 4, UNSIGNED, 2, TYPE_CR}, {0}}},
+    { "sch0l"   , N850_SCH0L    ,    4, 0xFFE0FB64  , 0x7E00364  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    { "sch0r"   , N850_SCH0R    ,    4, 0xFFE0FB60  , 0x7E00360  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    { "sch1l"   , N850_SCH1L    ,    4, 0xFFE0FB66  , 0x7E00366  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    { "sch1r"   , N850_SCH1R    ,    4, 0xFFE0FB62  , 0x7E00362  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    { "shl"   , N850_SHLL     ,    4, 0xfffff8c2  , 0x07e000c2  , 2,   OP_TYPE_SHL, COND_NV, {{0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
+    { "shr"   , N850_SHRL     ,    4, 0xffff0082  , 0x07e00082  , 2,   OP_TYPE_SHR, COND_NV, {{0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
+    { "snooze"   , N850_SNOOZE     ,    4, 0xfe00120  , 0xfe00120  , 0,   OP_TYPE_NOP, COND_NV, {{0}, {0}, {0}, {0}, {0}}},
+    { "stc.w"   , N850_STCW    ,    4, 0x7fffb7a  , 0x7E0037A  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG_MEM}, {0}, {0}, {0}}},
 
 
    
@@ -282,6 +303,10 @@ const disass_insn_t instruction_list[] = {
     { "sxb"   , N850_SXB     ,    2, 0x00Bf    , 0x00A0       , 1,   OP_TYPE_SUB, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}, {0}}},
     { "tst"   , N850_TST     ,    2, 0xF97F    , 0x0160       , 2,   OP_TYPE_AND, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0xf800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
     { "xor"   , N850_XOR     ,    2, 0xf93f    , 0x0120       , 2,   OP_TYPE_OR, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0xf800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
+    { "rie"   , N850_RIE ,    2, 0x0080    , 0x0080       , 0,   OP_TYPE_CMP, COND_NV, {{0}, {0}, {0}, {0}, {0}}},
+ 
+
+
 
 
 
@@ -323,7 +348,7 @@ insn_t *disassemble(const uint8_t *in_buffer) {
                 int64_t tmp_value = data & current_insn->fields[op_index].mask;
                 if (current_insn->fields[op_index].type == TYPE_EP) {
                     ret_val->fields[real_op_index].value = 30;
-                    ret_val->fields[real_op_index].type = TYPE_REG;
+                    ret_val->fields[real_op_index].type = TYPE_REG_MEM;
                     ret_val->fields[real_op_index].size += current_insn->fields[op_index].size;
                     ret_val->fields[real_op_index].sign = current_insn->fields[op_index].sign;
                     continue;
