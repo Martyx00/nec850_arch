@@ -1129,7 +1129,7 @@ public:
 				);
 			}
 			break;
-			case N850_CMPFS:
+			case N850_CMPFSF:
 			{
 				il.AddInstruction(il.Unimplemented());
 			}
