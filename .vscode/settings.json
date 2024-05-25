@@ -21,5 +21,6 @@
         "utility": "c",
         "any": "c",
         "complex": "c"
-    }
+    },
+    "cmake.configureOnOpen": false
 }
