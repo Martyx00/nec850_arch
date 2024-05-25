@@ -236,6 +236,7 @@ enum insn_id {
 
 };
 
+
 enum op_type {
   TYPE_NONE = 0,
   TYPE_REG  = 1,
@@ -246,7 +247,8 @@ enum op_type {
   TYPE_LIST = 6,
   TYPE_SYSREG = 7,
   TYPE_EP = 8,
-  TYPE_REG_MEM = 9
+  TYPE_REG_MEM = 9,
+  TYPE_CCCC = 10
 };
 
 enum insn_type {

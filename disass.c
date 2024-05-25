@@ -29,51 +29,8 @@ typedef struct {
 
 
 const disass_insn_t instruction_list[] = {
-    // 6-byte insturctions
-    { "mov"   , N850_MOVI     ,    6, 0x63fffffffff  , 0x62000000000  , 2,   OP_TYPE_MOV, COND_NV, {{0xffff0000,  16,  0,  0, 16, UNSIGNED, 0, TYPE_IMM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_IMM},{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG},  {0}, {0}}},
-    { "jr"   , N850_JRL     ,    6, 0x2e0fffeffff    , 0x2e000000000      , 1,   OP_TYPE_JMP, COND_NV, {{0}, {0xffff0000,  16,  0,  0, 16, UNSIGNED, 0, TYPE_JMP}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_JMP}, {0}, {0}}},
-    /*UNTESTED*/{ "jarl"   , N850_JARL2     ,    6, 0x2fffffeffff  , 0x2e000000000  , 2,   OP_TYPE_CALL, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xffff0000,  16,  0,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0}, {0}}},
-    { "jmp"   , N850_JMPI     ,    6, 0x6ffffffeffff    , 0x6E000000000       , 2,   OP_TYPE_RJMP, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG_MEM}, {0xffff0000,  16,  0,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0}, {0}}},
-    /*UNTESTED*/{ "ld.b"   , N850_LDBL     ,    6, 0x79FFFF5ffff    , 0x78000050000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x7fff0000,  20,  0,  0, 7, SIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, SIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
-    { "ld.bu"   , N850_LDBUL     ,    6, 0x7BFFFF5ffff    , 0x7A000050000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x7fff0000,  20,  0,  0, 7, SIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, SIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
-    
-    
-    
-    { "ld.dw"   , N850_LDDW     ,    6, 0x7BFFFE9ffff    , 0x7A000090000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x7ffe0000,  20,  0,  0, 7, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
-    { "ld.h"   , N850_LDHL     ,    6, 0x79FFFE7ffff    , 0x78000070000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x7ffe0000,  20,  0,  0, 7, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
-    { "ld.hu"   , N850_LDHUL     ,    6, 0x7BFFFE7ffff    , 0x7A000070000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x7ffe0000,  20,  0,  0, 7, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
-    { "ld.w"   , N850_LDWL     ,    6, 0x79FFFE9ffff    , 0x78000090000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x7ffe0000,  20,  0,  0, 7, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
-    { "st.b"   , N850_STDL     ,    6, 0x79FFFFDffff    , 0x780000D0000     , 3,   OP_TYPE_STORE, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x7fff0000,  20,  0,  0, 7, UNSIGNED, 1, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 1, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}}},
-    { "st.dw"   , N850_STDW     ,    6, 0x7BFFFEfffff    , 0x7A0000F0000     , 3,   OP_TYPE_STORE, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x7ffe0000,  20,  0,  0, 7, UNSIGNED, 1, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 1, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}}},
-    { "st.h"   , N850_STHL     ,    6, 0x7BFFFEDffff    , 0x7A0000D0000     , 3,   OP_TYPE_STORE, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x7ffe0000,  20,  0,  0, 7, UNSIGNED, 1, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 1, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}}},
-    { "st.w"   , N850_STWL     ,    6, 0x79FFFEFffff    , 0x780000F0000     , 3,   OP_TYPE_STORE, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x7ffe0000,  20,  0,  0, 7, UNSIGNED, 1, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 1, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}}},
-
-    // 4 byte insturctions
 //  { "name"   , enum          , size, mask        , static_mask , n,   op_type    , cond   , {{field ,shr,shl,  +, size, sign, index, TYPE_REG}, ...}
-    // Floats
-    { "absf.s"   , N850_ABSFS     ,    4, 0xFFE0FC48  , 0x07E00448  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    { "addf.s"   , N850_ADDFS     ,    4, 0xFFFFFC60  , 0x7E00460  , 3,   OP_TYPE_ADD, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
-    { "ceilf.sl"   , N850_CEILFSL     ,    4, 0xFFE2F444  , 0x07E20444  , 2,   OP_TYPE_MOV, COND_NV, {{0x000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    { "ceilf.sul"   , N850_CEILFSUL     ,    4, 0xFFF2F444  , 0x07F20444  , 2,   OP_TYPE_MOV, COND_NV, {{0x000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    { "ceilf.suw"   , N850_CEILFSUW     ,    4, 0xFFF2FC40  , 0x07F20440  , 2,   OP_TYPE_MOV, COND_NV, {{0x000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    { "ceilf.sw"   , N850_CEILFSW     ,    4, 0xFFE2FC40  , 0x07E20440  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    { "cmovf.s"   , N850_CMOVFS     ,    4, 0xFFFFFC0E  , 0x07E00400  , 4,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 3, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(F)"   , N850_CMPFSF     ,    4, 0xFFFF042E , 0x07E00420  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(UN)"   , N850_CMPFSUN     ,    4, 0xFFFF0C2E , 0x07E00C20  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(EQ)"   , N850_CMPFSEQ     ,    4, 0xFFFF142E , 0x07E01420  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(UEQ)"   , N850_CMPFSUEQ     ,    4, 0xFFFF1C2E , 0x07E01C20  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(OLT)"   , N850_CMPFSOLT     ,    4, 0xFFFF242E , 0x07E02420  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(ULT)"   , N850_CMPFSULT     ,    4, 0xFFFF2C2E , 0x07E02C20  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(OLE)"   , N850_CMPFSOLE     ,    4, 0xFFFF342E , 0x07E03420  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(ULE)"   , N850_CMPFSULE     ,    4, 0xFFFF3C2E , 0x07E03C20  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(SF)"   , N850_CMPFSSF     ,    4, 0xFFFF442E , 0x07E04420  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(NGLE)"   , N850_CMPFSNGLE     ,    4, 0xFFFF4C2E , 0x07E04C20  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(SEQ)"   , N850_CMPFSSEQ     ,    4, 0xFFFF542E , 0x07E05420  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(NGL)"   , N850_CMPFSNGL     ,    4, 0xFFFF5C2E , 0x07E05C20  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(SLT)"   , N850_CMPFSLT     ,    4, 0xFFFF642E , 0x07E06420  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(NGE)"   , N850_CMPFSNGE     ,    4, 0xFFFF6C2E , 0x07E06C20  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(LE)"   , N850_CMPFSLE     ,    4, 0xFFFF742E , 0x07E07420  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s(NGT)"   , N850_CMPFSNGT     ,    4, 0xFFFF7C2E , 0x07E07C20  , 3,   OP_TYPE_MOV, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
+    { "trfsr.s"   , N850_TRFSR     ,    4, 0x7E0040E  , 0x7E00400  , 1,   OP_TYPE_SUB, COND_NV, {{0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_IMM}, {0}, {0}, {0}, {0}}},
     { "cvtf.hs"   , N850_CVTFHS     ,    4, 0xFFE2FC42  , 0x7E20442  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
     { "cvtf.ls"   , N850_CVTFLS     ,    4, 0xF7E1FC42  , 0x7E10442  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf0000000,  28,  0,  0, 4, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
     { "cvtf.sl"   , N850_CVTFSL     ,    4, 0xFFE4FC44  , 0x7E40444  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
@@ -84,62 +41,90 @@ const disass_insn_t instruction_list[] = {
     { "cvtf.uls"   , N850_CVTFULS     ,    4, 0xF7F1FC42  , 0x07F10442 , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf0000000,  28,  0,  0, 4, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
     { "cvtf.uws"   , N850_CVTFUWS     ,    4, 0xFFF0FC42  , 0x07F00442 , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
     { "cvtf.ws"   , N850_CVTFWS     ,    4, 0xFFE0FC42  , 0x07E00442 , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-
+    // 6-byte insturctions
+    { "mov"   , N850_MOVI     ,    6, 0x63fffffffff  , 0x62000000000  , 2,   OP_TYPE_MOV, COND_NV, {{0xffff0000,  16,  0,  0, 16, UNSIGNED, 0, TYPE_IMM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_IMM},{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG},  {0}, {0}}},
+    { "jr"   , N850_JRL     ,    6, 0x2e0fffeffff    , 0x2e000000000      , 1,   OP_TYPE_JMP, COND_NV, {{0}, {0xffff0000,  16,  0,  0, 16, UNSIGNED, 0, TYPE_JMP}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_JMP}, {0}, {0}}},
+    /*UNTESTED*/{ "jarl"   , N850_JARL2     ,    6, 0x2fffffeffff  , 0x2e000000000  , 2,   OP_TYPE_CALL, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xffff0000,  16,  0,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0}, {0}}},
+    /*UNTESTED*/{ "ld.b"   , N850_LDBL     ,    6, 0x79FFFF5ffff    , 0x78000050000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG_MEM}, {0x7f00000,  20,  0,  0, 7, SIGNED, 0, TYPE_MEM}, {0xffff,  0,  7,  0, 16, SIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
+    { "ld.bu"   , N850_LDBUL     ,    6, 0x7BFFFF5ffff    , 0x7A000050000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG_MEM}, {0x7f00000,  20,  0,  0, 7, SIGNED, 0, TYPE_MEM}, {0xffff,  0,  7,  0, 16, SIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},    
+    { "ld.dw"   , N850_LDDW     ,    6, 0x7BFFFE9ffff    , 0x7A000090000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG_MEM}, {0x7e00000,  20,  0,  0, 7, SIGNED, 0, TYPE_MEM}, {0xffff,  0,  7,  0, 16, SIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
+    /*UNTESTED*/{ "ld.h"   , N850_LDHL     ,    6, 0x79FFFE7ffff    , 0x78000070000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG_MEM}, {0x7e00000,  20,  0,  0, 7, SIGNED, 0, TYPE_MEM}, {0xffff,  0,  7,  0, 16, SIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
+    { "ld.hu"   , N850_LDHUL     ,    6, 0x7BFFFE7ffff    , 0x7A000070000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG_MEM}, {0x7e0000,  20,  0,  0, 7, SIGNED, 0, TYPE_MEM}, {0xffff,  0,  7,  0, 16, SIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},
+    { "ld.w"   , N850_LDWL     ,    6, 0x79FFFE9ffff    , 0x78000090000     , 3,   OP_TYPE_LOAD, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG_MEM}, {0x7e00000,  20,  0,  0, 7, SIGNED, 0, TYPE_MEM}, {0xffff,  0,  7,  0, 16, SIGNED, 0, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}}},   
+    /*UNTESTED*/{ "st.b"   , N850_STDL     ,    6, 0x79FFFFDffff    , 0x780000D0000     , 3,   OP_TYPE_STORE, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 2, TYPE_REG_MEM}, {0x7f00000,  20,  0,  0, 7, SIGNED, 1, TYPE_MEM}, {0xffff,  0,  7,  0, 16, SIGNED, 1, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}}},
+    { "st.dw"   , N850_STDW     ,    6, 0x7BFFFEfffff    , 0x7A0000F0000     , 3,   OP_TYPE_STORE, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 2, TYPE_REG_MEM}, {0x7e00000,  20,  0,  0, 7, SIGNED, 1, TYPE_MEM}, {0xffff,  0,  7,  0, 16, SIGNED, 1, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}}},
+    { "st.h"   , N850_STHL     ,    6, 0x7BFFFEDffff    , 0x7A0000D0000     , 3,   OP_TYPE_STORE, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 2, TYPE_REG_MEM}, {0x7e00000,  20,  0,  0, 7, SIGNED, 1, TYPE_MEM}, {0xffff,  0,  7,  0, 16, SIGNED, 1, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}}},
+    { "st.w"   , N850_STWL     ,    6, 0x79FFFEFffff    , 0x780000F0000     , 3,   OP_TYPE_STORE, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 2, TYPE_REG_MEM}, {0x7e00000,  20,  0,  0, 7, SIGNED, 1, TYPE_MEM}, {0xffff,  0,  7,  0, 16, SIGNED, 1, TYPE_MEM}, {0x0000f8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}}},
+    // 4 byte insturctions
+    // Floats
+    /*UNTESTED*/{ "absf.s"   , N850_ABSFS     ,    4, 0xFFE0FC48  , 0x07E00448  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    { "addf.s"   , N850_ADDFS     ,    4, 0xFFFFFC60  , 0x7E00460  , 3,   OP_TYPE_ADD, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
+    /*UNTESTED*/{ "ceilf.sl"   , N850_CEILFSL     ,    4, 0xFFE2F444  , 0x07E20444  , 2,   OP_TYPE_MOV, COND_NV, {{0x000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "ceilf.sul"   , N850_CEILFSUL     ,    4, 0xFFF2F444  , 0x07F20444  , 2,   OP_TYPE_MOV, COND_NV, {{0x000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "ceilf.suw"   , N850_CEILFSUW     ,    4, 0xFFF2FC40  , 0x07F20440  , 2,   OP_TYPE_MOV, COND_NV, {{0x000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "ceilf.sw"   , N850_CEILFSW     ,    4, 0xFFE2FC40  , 0x07E20440  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "cmovf.s"   , N850_CMOVFS     ,    4, 0xFFFFFC0E  , 0x07E00400  , 4,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 3, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
+    { "cmpf.s(F)"   , N850_CMPFSF     ,    4, 0xFFFF042E , 0x07E00420  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
+    { "cmpf.s(UN)"   , N850_CMPFSUN     ,    4, 0xFFFF0C2E , 0x07E00C20  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
+    { "cmpf.s(EQ)"   , N850_CMPFSEQ     ,    4, 0xFFFF142E , 0x07E01420  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
+    { "cmpf.s(UEQ)"   , N850_CMPFSUEQ     ,    4, 0xFFFF1C2E , 0x07E01C20  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
+    { "cmpf.s(OLT)"   , N850_CMPFSOLT     ,    4, 0xFFFF242E , 0x07E02420  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
+    { "cmpf.s(ULT)"   , N850_CMPFSULT     ,    4, 0xFFFF2C2E , 0x07E02C20  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
+    { "cmpf.s(OLE)"   , N850_CMPFSOLE     ,    4, 0xFFFF342E , 0x07E03420  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
+    { "cmpf.s(ULE)"   , N850_CMPFSULE     ,    4, 0xFFFF3C2E , 0x07E03C20  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
+    { "cmpf.s(SF)"   , N850_CMPFSSF     ,    4, 0xFFFF442E , 0x07E04420  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
+    { "cmpf.s(NGLE)"   , N850_CMPFSNGLE     ,    4, 0xFFFF4C2E , 0x07E04C20  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
+    { "cmpf.s(SEQ)"   , N850_CMPFSSEQ     ,    4, 0xFFFF542E , 0x07E05420  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
+    { "cmpf.s(NGL)"   , N850_CMPFSNGL     ,    4, 0xFFFF5C2E , 0x07E05C20  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
+    { "cmpf.s(SLT)"   , N850_CMPFSLT     ,    4, 0xFFFF642E , 0x07E06420  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
+    { "cmpf.s(NGE)"   , N850_CMPFSNGE     ,    4, 0xFFFF6C2E , 0x07E06C20  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
+    { "cmpf.s(LE)"   , N850_CMPFSLE     ,    4, 0xFFFF742E , 0x07E07420  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
+    { "cmpf.s(NGT)"   , N850_CMPFSNGT     ,    4, 0xFFFF7C2E , 0x07E07C20  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
     { "divf.s"   , N850_DIVFS     ,    4, 0xFFFFFC6E  , 0x7E0046E  , 3,   OP_TYPE_DIV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
-    
-    { "floorf.sl"   , N850_FLOORFSL    ,    4, 0xFFE3F444  , 0x7E30444  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    { "floorf.sul"   , N850_FLOORFSUL    ,    4, 0xFFF3F444  , 0x7F30444  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-
-    { "floorf.suw"   , N850_FLOORFSUW     ,    4, 0xFFF3FC40  , 0x7F30440  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    { "floorf.sw"   , N850_FLOORFSW     ,    4, 0xFFE3FC40  , 0x7E30440  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-
+    /*UNTESTED*/{ "floorf.sl"   , N850_FLOORFSL    ,    4, 0xFFE3F444  , 0x7E30444  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "floorf.sul"   , N850_FLOORFSUL    ,    4, 0xFFF3F444  , 0x7F30444  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "floorf.suw"   , N850_FLOORFSUW     ,    4, 0xFFF3FC40  , 0x7F30440  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "floorf.sw"   , N850_FLOORFSW     ,    4, 0xFFE3FC40  , 0x7E30440  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
     { "fmaf.s"   , N850_FMAFS     ,    4, 0xFFFFFCE0  , 0x7E004E0  , 3,   OP_TYPE_DIV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
-    { "fmsf.s"   , N850_FMSFS     ,    4, 0xFFFFFCE2  , 0x7E004E2  , 3,   OP_TYPE_DIV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
-    { "fnmaf.s"   , N850_FNMAFS     ,    4, 0xFFFFFCE4  , 0x7E004E4  , 3,   OP_TYPE_DIV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
-    { "fnmsf.s"   , N850_FNMSFS     ,    4, 0xFFFFFCE6  , 0x7E004E6  , 3,   OP_TYPE_DIV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
-    { "maxf.s"   , N850_MAXFS     ,    4, 0xFFFFFC68  , 0x7E00468  , 3,   OP_TYPE_DIV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
-    { "minf.s"   , N850_MINFS     ,    4, 0xFFFFFC6A  , 0x7E0046A  , 3,   OP_TYPE_DIV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
-
+    /*UNTESTED*/{ "fmsf.s"   , N850_FMSFS     ,    4, 0xFFFFFCE2  , 0x7E004E2  , 3,   OP_TYPE_DIV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
+    /*UNTESTED*/{ "fnmaf.s"   , N850_FNMAFS     ,    4, 0xFFFFFCE4  , 0x7E004E4  , 3,   OP_TYPE_DIV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
+    /*UNTESTED*/{ "fnmsf.s"   , N850_FNMSFS     ,    4, 0xFFFFFCE6  , 0x7E004E6  , 3,   OP_TYPE_DIV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
+    /*UNTESTED*/{ "maxf.s"   , N850_MAXFS     ,    4, 0xFFFFFC68  , 0x7E00468  , 3,   OP_TYPE_DIV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
+    /*UNTESTED*/{ "minf.s"   , N850_MINFS     ,    4, 0xFFFFFC6A  , 0x7E0046A  , 3,   OP_TYPE_DIV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
     { "mulf.s"   , N850_MULFS     ,    4, 0xFFFFFC64  , 0x7E00464  , 3,   OP_TYPE_DIV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
-    { "negf.s"   , N850_NEGFS     ,    4, 0xFFE1FC48  , 0x7E10448  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    { "recipf.s"   , N850_RECIPFS    ,    4, 0xFFE1FC48  , 0x7E1044E  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    
-    { "roundf.sl"   , N850_EOUNDFSL    ,    4, 0xFFE0F444  , 0x7E00444  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    { "roundf.sul"   , N850_EOUNDFSUL    ,    4, 0xFFF0F444  , 0x7F00444  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-
-    { "roundf.suw"   , N850_ROUNDFSUW     ,    4, 0xFFF0FC40  , 0x7F00440  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    { "roundf.sw"   , N850_ROUNDFSW     ,    4, 0xFFE0FC40  , 0x7E00440  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    
-    { "rsqrtf.s"   , N850_RSQRTFS     ,    4, 0xFFE2FC40  , 0x7E2044E  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    { "sqrtf.s"   , N850_SQRTFS     ,    4, 0xFFE0FC40  , 0x7E0044E  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-
+    /*UNTESTED*/{ "negf.s"   , N850_NEGFS     ,    4, 0xFFE1FC48  , 0x7E10448  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "recipf.s"   , N850_RECIPFS    ,    4, 0xFFE1FC48  , 0x7E1044E  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "roundf.sl"   , N850_EOUNDFSL    ,    4, 0xFFE0F444  , 0x7E00444  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "roundf.sul"   , N850_EOUNDFSUL    ,    4, 0xFFF0F444  , 0x7F00444  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "roundf.suw"   , N850_ROUNDFSUW     ,    4, 0xFFF0FC40  , 0x7F00440  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "roundf.sw"   , N850_ROUNDFSW     ,    4, 0xFFE0FC40  , 0x7E00440  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "rsqrtf.s"   , N850_RSQRTFS     ,    4, 0xFFE2FC40  , 0x7E2044E  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "sqrtf.s"   , N850_SQRTFS     ,    4, 0xFFE0FC40  , 0x7E0044E  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
     { "subf.s"   , N850_SUBFS     ,    4, 0xFFFFFC62  , 0x7E00462  , 3,   OP_TYPE_SUB, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}}},
-
-    { "trfsr.s"   , N850_TRFSR     ,    4, 0x7E0040E  , 0x7E00400  , 1,   OP_TYPE_SUB, COND_NV, {{0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_CR}, {0}, {0}, {0}, {0}}},
-
-    { "trncf.sl"   , N850_TRNCFSL    ,    4, 0xFFE1F444  , 0x7E10444  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    { "trncf.sul"   , N850_TRNCFSUL    ,    4, 0xFFF1F444  , 0x7F10444  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-
+    /*UNTESTED*/{ "trncf.sl"   , N850_TRNCFSL    ,    4, 0xFFE1F444  , 0x7E10444  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "trncf.sul"   , N850_TRNCFSUL    ,    4, 0xFFF1F444  , 0x7F10444  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
     { "trncf.suw"   , N850_TRNCFSUW     ,    4, 0xFFF1FC40  , 0x7F10440  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    { "trncf.sw"   , N850_TRNCFSW     ,    4, 0xFFE0FC40  , 0x7E00440  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-
+    { "trncf.sw"   , N850_TRNCFSW     ,    4, 0xFFE1FC40  , 0x7E00440  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
     { "addi"   , N850_ADDI     ,    4, 0xFE1FFFFF  , 0x06000000  , 3,   OP_TYPE_MOV, COND_NV, {{0x0000ffff,  0,  0,  0, 16, SIGNED, 0, TYPE_IMM}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
-    { "adf"   , N850_ADF     ,    4, 0xFFFFFBBE  , 0x7E003A0  , 4,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 3, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000001E,  1,  0,  0, 4, UNSIGNED, 0, TYPE_CR}, {0}}},
+    { "adf"   , N850_ADF     ,    4, 0xFFFFFBBE  , 0x7E003A0  , 4,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 3, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000001E,  1,  0,  0, 4, UNSIGNED, 0, TYPE_CCCC}, {0}}},  
     { "andi"   , N850_ANDI     ,    4, 0xFEDFFFFF  , 0x06C00000  , 3,   OP_TYPE_MOV, COND_NV, {{0x0000ffff,  0,  0,  0, 16, SIGNED, 0, TYPE_IMM}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
-    { "bsh"   , N850_BSH     ,    4, 0xFFE0FB42  , 0x07e00342  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    { "caxi"   , N850_CAXI    ,    4, 0xFFFFF8EE , 0x07E000EE  , 3,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG_MEM}, {0}, {0}}},
-    { "cll"   , N850_CLL     ,    4, 0xFFFFF160  , 0xFFFFF160  , 0,   OP_TYPE_NOP, COND_NV, {{0}, {0}, {0}, {0}, {0}}},
-    
+    /*UNTESTED*/{ "bsh"   , N850_BSH     ,    4, 0xFFE0FB42  , 0x07e00342  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "caxi"   , N850_CAXI    ,    4, 0xFFFFF8EE , 0x07E000EE  , 3,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG_MEM}, {0}, {0}}},
+    /*UNTESTED*/{ "cll"   , N850_CLL     ,    4, 0xFFFFF160  , 0xFFFFF160  , 0,   OP_TYPE_NOP, COND_NV, {{0}, {0}, {0}, {0}, {0}}},
     // TODO tehse dont work (params are wrong? could be solved with lifting?)
     { "bins"   , N850_BINS     ,    4, 0xFFFFF89E  , 0x07e00090  , 4,   OP_TYPE_MOV, COND_NV, {{0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 3, TYPE_REG}, {0x0000F000,  12,  0,  0, 4, UNSIGNED, 2, TYPE_IMM}, {0x00000800,  8,  0,  0, 1, UNSIGNED, 1, TYPE_IMM}, {0x0000000E,  1,  0,  0x10, 3, UNSIGNED, 1, TYPE_IMM}}},
     { "bins"   , N850_BINS2    ,    4, 0xFFFFF8BE  , 0x07e000B0  , 4,   OP_TYPE_MOV, COND_NV, {{0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 3, TYPE_REG}, {0x0000F000,  12,  0,  0, 5, UNSIGNED, 2, TYPE_IMM}, {0x00000800,  8,  0,  0, 1, UNSIGNED, 1, TYPE_IMM}, {0x0000000E,  1,  0,  0x10, 3, UNSIGNED, 1, TYPE_IMM}}},
     { "bins"   , N850_BINS3    ,    4, 0xFFFFF8DE  , 0x07e000D0  , 4,   OP_TYPE_MOV, COND_NV, {{0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 3, TYPE_REG}, {0x0000F000,  12,  0,  0, 4, UNSIGNED, 2, TYPE_IMM}, {0x00000800,  8,  0,  0, 1, UNSIGNED, 1, TYPE_IMM}, {0x0000000E,  1,  0,  0x10, 3, UNSIGNED, 1, TYPE_IMM}}},
-    
+    // End TODO
     { "bsw"   , N850_BSW     ,    4, 0xFFE0FB40  , 0x07e00340  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    { "clr1"   , N850_CLR1     ,    4, 0xBFDFFFFF  , 0x87c00000  , 3,   OP_TYPE_MOV, COND_NV, {{0x38000000,  27,  0,  0, 3, UNSIGNED, 0, TYPE_IMM}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x0000FFFF,  0,  0,  0, 16, SIGNED, 1, TYPE_MEM}, {0}, {0}}},
-    { "clr1"   , N850_CLR1R     ,    4, 0xFFFF00E4  , 0x07e000e4  , 2,   OP_TYPE_MOV, COND_NV, {{0xF8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
-    { "cmov"   , N850_CMOV     ,    4, 0xFFFFFB3E  , 0x07e00320  , 4,   OP_TYPE_MOV, COND_NV, {{0x0000001E,  1,  0,  0, 4, UNSIGNED, 0, TYPE_CR}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xF8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x0000f800,  11,  0,  0, 5, UNSIGNED, 3, TYPE_REG}, {0}}},
-    { "cmov"   , N850_CMOVI     ,    4, 0xFFFFFB1E  , 0x07e00300  , 4,   OP_TYPE_MOV, COND_NV, {{0x0000001E,  1,  0,  0, 4, UNSIGNED, 0, TYPE_CR}, {0x001f0000,  16,  0,  0, 5, SIGNED, 1, TYPE_IMM}, {0xF8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x0000f800,  11,  0,  0, 5, UNSIGNED, 3, TYPE_REG}, {0}}},
+    { "clr1"   , N850_CLR1     ,    4, 0xBFDFFFFF  , 0x87c00000  , 3,   OP_TYPE_MOV, COND_NV, {{0x38000000,  27,  0,  0, 3, UNSIGNED, 0, TYPE_IMM}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 2, TYPE_REG_MEM}, {0x0000FFFF,  0,  0,  0, 16, SIGNED, 1, TYPE_MEM}, {0}, {0}}},
+    /*UNTESTED*/{ "clr1"   , N850_CLR1R     ,    4, 0xFFFF00E4  , 0x07e000e4  , 2,   OP_TYPE_MOV, COND_NV, {{0xF8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
+    { "cmov"   , N850_CMOV     ,    4, 0xFFFFFB3E  , 0x07e00320  , 4,   OP_TYPE_MOV, COND_NV, {{0x0000001E,  1,  0,  0, 4, UNSIGNED, 0, TYPE_CCCC}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xF8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x0000f800,  11,  0,  0, 5, UNSIGNED, 3, TYPE_REG}, {0}}},
+    { "cmov"   , N850_CMOVI     ,    4, 0xFFFFFB1E  , 0x07e00300  , 4,   OP_TYPE_MOV, COND_NV, {{0x0000001E,  1,  0,  0, 4, UNSIGNED, 0, TYPE_CCCC}, {0x001f0000,  16,  0,  0, 5, SIGNED, 1, TYPE_IMM}, {0xF8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x0000f800,  11,  0,  0, 5, UNSIGNED, 3, TYPE_REG}, {0}}},
+    
+    
+    
+    
     { "ctret"   , N850_CTRET     ,    4, 0x7e00144  , 0x7e00144  , 0,   OP_TYPE_RET, COND_NV, {{0}, {0}, {0}, {0}, {0}}},
     { "dbret"   , N850_DBRET     ,    4, 0x7e00146  , 0x7e00146  , 0,   OP_TYPE_RET, COND_NV, {{0}, {0}, {0}, {0}, {0}}},
     { "di"   , N850_DI     ,    4, 0x7e00160  , 0x7e00160  , 0,   OP_TYPE_RET, COND_NV, {{0}, {0}, {0}, {0}, {0}}},
@@ -224,6 +209,7 @@ const disass_insn_t instruction_list[] = {
     { "snooze"   , N850_SNOOZE     ,    4, 0xfe00120  , 0xfe00120  , 0,   OP_TYPE_NOP, COND_NV, {{0}, {0}, {0}, {0}, {0}}},
     { "stc.w"   , N850_STCW    ,    4, 0x7fffb7a  , 0x7E0037A  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG_MEM}, {0}, {0}, {0}}},
 
+    { "jmp"   , N850_JMPI     ,    6, 0x6ffffffeffff    , 0x6E000000000       , 2,   OP_TYPE_RJMP, COND_NV, {{0x001f00000000,  32,  0,  0, 5, UNSIGNED, 1, TYPE_REG_MEM}, {0xffff0000,  16,  0,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0xffff,  0,  16,  0, 16, UNSIGNED, 0, TYPE_MEM}, {0}, {0}}},
 
    
     // 2-byte Instructions
@@ -364,8 +350,9 @@ insn_t *disassemble(const uint8_t *in_buffer) {
             }
             for (int op_index = 0; op_index < 5; op_index++)
             {
-                if ((ret_val->fields[op_index].type == TYPE_IMM || ret_val->fields[op_index].type == TYPE_JMP) && ret_val->fields[op_index].sign == SIGNED) {
+                if ((ret_val->fields[op_index].type == TYPE_IMM || ret_val->fields[op_index].type == TYPE_JMP || ret_val->fields[op_index].type == TYPE_MEM) && ret_val->fields[op_index].sign == SIGNED) {
                     int64_t m = 1UL << (ret_val->fields[op_index].size - 1);
+                    //printf("extending %d with %d",ret_val->fields[op_index].value ,m);
                     ret_val->fields[op_index].value = (ret_val->fields[op_index].value ^ m) - m;
                 }
             }
@@ -401,7 +388,7 @@ void pretty_print(insn_t* insn){
 }
 
 int main() {
-    uint8_t test[] = {0x41,0x8a,0xdc,0x09};
+    /*uint8_t test[] = {0x41,0x8a,0xdc,0x09};
     pretty_print(disassemble(test));
     
     printf("=========================\n");
@@ -422,8 +409,8 @@ int main() {
     printf("=========================\n");
     uint8_t test7[] = {0x9e,0x0d,0x63,0x00};
     pretty_print(disassemble(test7));
-    printf("=========================\n");
-    uint8_t test8[] = {0xCA ,0xFD};
+    printf("=========================\n");*/
+    uint8_t test8[] = {0xe2,0x07,0x16,0xe3};
     pretty_print(disassemble(test8));
     return 1;
 }

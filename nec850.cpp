@@ -45,6 +45,25 @@ static const char *reg_name[] = {
 	"lp",
 	"pc"};
 
+static const char *cccc_name[] = {
+	"v",
+	"c/l",
+	"z",
+	"nh",
+	"s/n",
+	"t",
+	"lt",
+	"le",
+	"nv",
+	"nc/nl",
+	"nz",
+	"h",
+	"ns/p",
+	"INVALID",
+	"ge",
+	"gt"
+};
+
 class NEC850 : public Architecture
 {
 private:
@@ -1919,12 +1938,12 @@ public:
 		{
 
 			int name_len = strlen(insn->name);
-			for (int i = name_len; i < 8; i++)
+			for (int i = name_len; i < 14; i++)
 			{
 				tmp[i - name_len] = ' ';
 			}
 			len = insn->size;
-			tmp[8 - name_len] = 0;
+			tmp[14 - name_len] = 0;
 			result.emplace_back(InstructionToken, insn->name);
 			result.emplace_back(TextToken, tmp);
 			char hex_val[20] = {0};
@@ -1938,6 +1957,7 @@ public:
 					result.emplace_back(RegisterToken, reg_name[insn->fields[op_index].value]);
 					break;
 				case TYPE_REG_MEM:
+					result.pop_back();
 					sprintf(reg_str, "[%s]", reg_name[insn->fields[op_index].value]);
 					result.emplace_back(RegisterToken, reg_str);
 					break;
@@ -1952,6 +1972,9 @@ public:
 				case TYPE_JMP:
 					sprintf(hex_val, "0x%x", (uint32_t)(insn->fields[op_index].value) + (uint32_t) addr); // + (uint32_t) addr));
 					result.emplace_back(IntegerToken, hex_val, insn->fields[op_index].value);
+					break;
+				case TYPE_CCCC:
+					result.emplace_back(RegisterToken, cccc_name[insn->fields[op_index].value]);
 					break;
 				case TYPE_CR:
 					sprintf(reg_str, "cr%d", (uint32_t)insn->fields[op_index].value);

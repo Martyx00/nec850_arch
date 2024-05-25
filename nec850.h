@@ -71,3 +71,22 @@
 #define FLAG_WRITE_ALL 6
 #define FLAG_WRITE_OVSZ 7
 #define FLAG_WRITE_CYOVSZ 8
+
+enum cond {
+    NEC850_CCCC_V = 0,
+    NEC850_CCCC_NV = 8,
+    NEC850_CCCC_CL = 1,
+    NEC850_CCCC_NCNL = 9,
+    NEC850_CCCC_Z = 2,
+    NEC850_CCCC_NZ = 10,
+    NEC850_CCCC_NH = 3,
+    NEC850_CCCC_H = 11,
+    NEC850_CCCC_SN = 4,
+    NEC850_CCCC_NSP = 12,
+    NEC850_CCCC_T = 5,
+    NEC850_CCCC_LT = 6,
+    NEC850_CCCC_GE = 14,
+    NEC850_CCCC_LE = 7,
+    NEC850_CCCC_GT = 15,
+
+};
