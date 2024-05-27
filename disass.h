@@ -232,7 +232,8 @@ enum insn_id {
     N850_STDW,
     N850_STHL,
     N850_STWL,
-    N850_RIE
+    N850_RIE,
+    N850_SHRR
 
 };
 
@@ -248,12 +249,17 @@ enum op_type {
   TYPE_SYSREG = 7,
   TYPE_EP = 8,
   TYPE_REG_MEM = 9,
-  TYPE_CCCC = 10
+  TYPE_CCCC = 10,
+  TYPE_COND = 11,
+  TYPE_LOOP = 12,
+  TYPE_BINS2 = 13,
+  TYPE_BINS3 = 14,
+  TYPE_BINS = 15
 };
 
 enum insn_type {
   OP_TYPE_ILL,
-
+OP_TYPE_LOOP,
   OP_TYPE_ADD,
   OP_TYPE_SUB,
   OP_TYPE_MUL,
@@ -311,6 +317,28 @@ enum op_condition {
   COND_ZERO,
   COND_NV
 };
+/*
+enum op_cond {
+  COND_F,
+  COND_UN,
+  COND_EQ,
+  COND_UEQ,
+  COND_OLT,
+  COND_ULT,
+  COND_OLE,
+  COND_ULE,
+  COND_SF,
+  COND_NGLE,
+  COND_SEQ,
+  COND_NGL,
+  COND_LT,
+  COND_NGE,
+  COND_LE,
+  COND_NGT
+};
+
+*/
+
 
 enum sign {
   UNSIGNED,

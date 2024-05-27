@@ -64,6 +64,25 @@ static const char *cccc_name[] = {
 	"gt"
 };
 
+static const char *cond_name[] = {
+	"f",
+	"un",
+	"eq",
+	"ueq",
+	"olt",
+	"ult",
+	"ole",
+	"ule",
+	"sf",
+	"ngle",
+	"seq",
+	"ngl",
+	"lt",
+	"nge",
+	"le",
+	"ngt"
+};
+
 class NEC850 : public Architecture
 {
 private:
@@ -87,6 +106,44 @@ public:
 	}
 
 	/*************************************************************************/
+
+	std::string GetSysregName(int sysreg_id)
+	{
+		switch(sysreg_id) {
+			case NEC_SYSREG_EIPC: return "eipc";
+			case NEC_SYSREG_EIPSW: return "eipsw";
+			case NEC_SYSREG_FEPC: return "fepc";
+			case NEC_SYSREG_FEPSW: return "fepsw";
+			case NEC_SYSREG_PSW: return "psw";
+			case NEC_SYSREG_FPSR: return "fpsr";
+			case NEC_SYSREG_FPEPC: return "fpepc";
+			case NEC_SYSREG_FPST: return "fpst";
+			case NEC_SYSREG_FPCC: return "fpcc";
+			case NEC_SYSREG_FPCFG: return "fpcfg";
+			case NEC_SYSREG_FPEC: return "fpec";
+			case NEC_SYSREG_EIIC: return "eiic";
+			case NEC_SYSREG_FEIC: return "feic";
+			case NEC_SYSREG_CTPC: return "ctpc";
+			case NEC_SYSREG_CTPSW: return "ctpsw";
+			case NEC_SYSREG_CTBP: return "ctbp";
+			case NEC_SYSREG_EIWR: return "eiwr";
+			case NEC_SYSREG_FEWR: return "fewr";
+			case NEC_SYSREG_BSEL: return "bsel";
+			case NEC_SYSREG_MCFG0: return "mcfg0";
+			case NEC_SYSREG_RBASE: return "rbase";
+			case NEC_SYSREG_EBASE: return "ebase";
+			case NEC_SYSREG_INTBP: return "intbp";
+			case NEC_SYSREG_MCTL: return "mctl";
+			case NEC_SYSREG_PID: return "pid";
+			case NEC_SYSREG_SCCFG: return "sccfg";
+			case NEC_SYSREG_SCBP: return "scbp";
+			case NEC_SYSREG_HTCFG0: return "htcfg0";
+			case NEC_SYSREG_MEA: return "mea";
+			case NEC_SYSREG_ASID: return "asid";
+			case NEC_SYSREG_MEI: return "mei";
+			default: return "INVALID";
+		}
+	}
 
 	virtual BNEndianness GetEndianness() const override
 	{
@@ -261,8 +318,79 @@ public:
 			NEC_REG_R0, NEC_REG_R1, NEC_REG_R2, NEC_REG_SP, NEC_REG_R4, NEC_REG_R5, NEC_REG_R6, NEC_REG_R7,
 			NEC_REG_R8, NEC_REG_R9, NEC_REG_R10, NEC_REG_R11, NEC_REG_R12, NEC_REG_R13, NEC_REG_R14, NEC_REG_R15,
 			NEC_REG_R16, NEC_REG_R17, NEC_REG_R18, NEC_REG_R19, NEC_REG_R20, NEC_REG_R21, NEC_REG_R22, NEC_REG_R23,
-			NEC_REG_R24, NEC_REG_R25, NEC_REG_R26, NEC_REG_R27, NEC_REG_R28,NEC_REG_R29, NEC_REG_EP, NEC_REG_LP, NEC_REG_PC
-			// TODO system registers
+			NEC_REG_R24, NEC_REG_R25, NEC_REG_R26, NEC_REG_R27, NEC_REG_R28,NEC_REG_R29, NEC_REG_EP, NEC_REG_LP, NEC_REG_PC,
+			// system registers
+			NEC_SYSREG_EIPC,
+			NEC_SYSREG_EIPSW,
+			NEC_SYSREG_FEPC,
+			NEC_SYSREG_FEPSW,
+			NEC_SYSREG_PSW,
+			NEC_SYSREG_FPSR,
+			NEC_SYSREG_FPEPC,
+			NEC_SYSREG_FPST,
+			NEC_SYSREG_FPCC,
+			NEC_SYSREG_FPCFG,
+			NEC_SYSREG_FPEC,
+			NEC_SYSREG_EIIC,
+			NEC_SYSREG_FEIC,
+			NEC_SYSREG_CTPC,
+			NEC_SYSREG_CTPSW,
+			NEC_SYSREG_CTBP,
+			NEC_SYSREG_EIWR,
+			NEC_SYSREG_FEWR,
+			NEC_SYSREG_BSEL,
+			NEC_SYSREG_MCFG0,
+			NEC_SYSREG_RBASE,
+			NEC_SYSREG_EBASE,
+			NEC_SYSREG_INTBP,
+			NEC_SYSREG_MCTL,
+			NEC_SYSREG_PID,
+			NEC_SYSREG_SCCFG,
+			NEC_SYSREG_SCBP,
+			NEC_SYSREG_HTCFG0,
+			NEC_SYSREG_MEA,
+			NEC_SYSREG_ASID,
+			NEC_SYSREG_MEI
+		};
+
+		return result;
+	}
+
+	virtual vector<uint32_t> GetSystemRegisters() override
+	{
+		vector<uint32_t> result = {
+			NEC_SYSREG_EIPC,
+			NEC_SYSREG_EIPSW,
+			NEC_SYSREG_FEPC,
+			NEC_SYSREG_FEPSW,
+			NEC_SYSREG_PSW,
+			NEC_SYSREG_FPSR,
+			NEC_SYSREG_FPEPC,
+			NEC_SYSREG_FPST,
+			NEC_SYSREG_FPCC,
+			NEC_SYSREG_FPCFG,
+			NEC_SYSREG_FPEC,
+			NEC_SYSREG_EIIC,
+			NEC_SYSREG_FEIC,
+			NEC_SYSREG_CTPC,
+			NEC_SYSREG_CTPSW,
+			NEC_SYSREG_CTBP,
+			NEC_SYSREG_EIWR,
+			NEC_SYSREG_FEWR,
+			NEC_SYSREG_BSEL,
+			NEC_SYSREG_MCFG0,
+			NEC_SYSREG_RBASE,
+			NEC_SYSREG_EBASE,
+			NEC_SYSREG_INTBP,
+			NEC_SYSREG_MCTL,
+			NEC_SYSREG_PID,
+			NEC_SYSREG_SCCFG,
+			NEC_SYSREG_SCBP,
+			NEC_SYSREG_HTCFG0,
+			NEC_SYSREG_MEA,
+			NEC_SYSREG_ASID,
+			NEC_SYSREG_MEI
+
 		};
 
 		return result;
@@ -1889,6 +2017,11 @@ public:
 			case OP_TYPE_JMP:
 				result.AddBranch(UnconditionalBranch, (insn->fields[0].value + (uint32_t)addr) & 0xffffffff);
 				break;
+			case OP_TYPE_LOOP:
+				target = ((uint32_t)addr - insn->fields[1].value) & 0xffffffff;
+				result.AddBranch(TrueBranch, target); // + (uint32_t) addr) & 0xffffffff);
+				result.AddBranch(FalseBranch, (insn->size + addr) & 0xffffffff);
+				break;
 			case OP_TYPE_CJMP:
 				target = (insn->fields[0].value + (uint32_t)addr) & 0xffffffff;
 				if (insn->fields[0].type == TYPE_JMP)
@@ -1957,11 +2090,12 @@ public:
 					result.emplace_back(RegisterToken, reg_name[insn->fields[op_index].value]);
 					break;
 				case TYPE_REG_MEM:
-					result.pop_back();
+					if (op_index > 0)
+						result.pop_back();
 					sprintf(reg_str, "[%s]", reg_name[insn->fields[op_index].value]);
 					result.emplace_back(RegisterToken, reg_str);
 					break;
-				case TYPE_MEM: // TODO
+				case TYPE_MEM:
 				case TYPE_IMM:
 					if (insn->fields[op_index].sign)
 						sprintf(hex_val, "%s0x%x", ((int32_t)insn->fields[op_index].value < 0) ? "-" : "", ((int32_t)insn->fields[op_index].value < 0) ? -(int32_t)insn->fields[op_index].value : (int32_t)insn->fields[op_index].value);
@@ -1971,14 +2105,24 @@ public:
 					break;
 				case TYPE_JMP:
 					sprintf(hex_val, "0x%x", (uint32_t)(insn->fields[op_index].value) + (uint32_t) addr); // + (uint32_t) addr));
-					result.emplace_back(IntegerToken, hex_val, insn->fields[op_index].value);
+					result.emplace_back(IntegerToken, hex_val, insn->fields[op_index].value + addr);
+					break;
+				case TYPE_LOOP:
+					sprintf(hex_val, "0x%x", (uint32_t) addr - (uint32_t)(insn->fields[op_index].value)); // + (uint32_t) addr));
+					result.emplace_back(IntegerToken, hex_val, addr - insn->fields[op_index].value);
 					break;
 				case TYPE_CCCC:
 					result.emplace_back(RegisterToken, cccc_name[insn->fields[op_index].value]);
 					break;
+				case TYPE_COND:
+					result.emplace_back(RegisterToken, cond_name[insn->fields[op_index].value]);
+					break;
 				case TYPE_CR:
 					sprintf(reg_str, "cr%d", (uint32_t)insn->fields[op_index].value);
 					result.emplace_back(RegisterToken, reg_str);
+					break;
+				case TYPE_SYSREG:
+					result.emplace_back(RegisterToken, this->GetSysregName(insn->fields[op_index].value));
 					break;
 				default:
 					break;
