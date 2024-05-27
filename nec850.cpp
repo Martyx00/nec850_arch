@@ -1276,7 +1276,7 @@ public:
 				);
 			}
 			break;
-			case N850_CMPFSF:
+			case N850_CMPFS:
 			{
 				il.AddInstruction(il.Unimplemented());
 			}
@@ -2031,7 +2031,7 @@ public:
 				}
 				else
 				{
-					LogInfo("CJMP WENT WRONG AT 0x%x", addr);
+					//LogInfo("CJMP WENT WRONG AT 0x%x", addr);
 					free(insn);
 					return false;
 				}
@@ -2086,29 +2086,36 @@ public:
 				switch (insn->fields[op_index].type)
 				{
 				case TYPE_REG:
-					// sprintf(reg_str, "r%d", (uint32_t)insn->fields[op_index].value);
 					result.emplace_back(RegisterToken, reg_name[insn->fields[op_index].value]);
 					break;
 				case TYPE_REG_MEM:
 					if (op_index > 0)
 						result.pop_back();
-					sprintf(reg_str, "[%s]", reg_name[insn->fields[op_index].value]);
+					snprintf(reg_str, 10, "[%s]", reg_name[insn->fields[op_index].value]);
 					result.emplace_back(RegisterToken, reg_str);
 					break;
 				case TYPE_MEM:
+					if (insn->fields[op_index].value == 0)
+						break;
+					if (insn->fields[op_index].sign)
+						snprintf(hex_val, 20,  "%s0x%x", ((int32_t)insn->fields[op_index].value < 0) ? "-" : "", ((int32_t)insn->fields[op_index].value < 0) ? -(int32_t)insn->fields[op_index].value : (int32_t)insn->fields[op_index].value);
+					else
+						snprintf(hex_val, 20,  "0x%x",(uint32_t)insn->fields[op_index].value);
+					result.emplace_back(IntegerToken, hex_val, insn->fields[op_index].value);
+					break;
 				case TYPE_IMM:
 					if (insn->fields[op_index].sign)
-						sprintf(hex_val, "%s0x%x", ((int32_t)insn->fields[op_index].value < 0) ? "-" : "", ((int32_t)insn->fields[op_index].value < 0) ? -(int32_t)insn->fields[op_index].value : (int32_t)insn->fields[op_index].value);
+						snprintf(hex_val, 20,  "%s0x%x", ((int32_t)insn->fields[op_index].value < 0) ? "-" : "", ((int32_t)insn->fields[op_index].value < 0) ? -(int32_t)insn->fields[op_index].value : (int32_t)insn->fields[op_index].value);
 					else
-						sprintf(hex_val, "0x%x",insn->fields[op_index].value);
+						snprintf(hex_val, 20,  "0x%x",(uint32_t)insn->fields[op_index].value);
 					result.emplace_back(IntegerToken, hex_val, insn->fields[op_index].value);
 					break;
 				case TYPE_JMP:
-					sprintf(hex_val, "0x%x", (uint32_t)(insn->fields[op_index].value) + (uint32_t) addr); // + (uint32_t) addr));
+					snprintf(hex_val, 20,  "0x%x", (uint32_t)(insn->fields[op_index].value) + (uint32_t) addr); // + (uint32_t) addr));
 					result.emplace_back(IntegerToken, hex_val, insn->fields[op_index].value + addr);
 					break;
 				case TYPE_LOOP:
-					sprintf(hex_val, "0x%x", (uint32_t) addr - (uint32_t)(insn->fields[op_index].value)); // + (uint32_t) addr));
+					snprintf(hex_val, 20,  "0x%x", (uint32_t) addr - (uint32_t)(insn->fields[op_index].value)); // + (uint32_t) addr));
 					result.emplace_back(IntegerToken, hex_val, addr - insn->fields[op_index].value);
 					break;
 				case TYPE_CCCC:
@@ -2116,10 +2123,6 @@ public:
 					break;
 				case TYPE_COND:
 					result.emplace_back(RegisterToken, cond_name[insn->fields[op_index].value]);
-					break;
-				case TYPE_CR:
-					sprintf(reg_str, "cr%d", (uint32_t)insn->fields[op_index].value);
-					result.emplace_back(RegisterToken, reg_str);
 					break;
 				case TYPE_SYSREG:
 					result.emplace_back(RegisterToken, this->GetSysregName(insn->fields[op_index].value));

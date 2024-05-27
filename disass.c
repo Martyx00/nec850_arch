@@ -65,8 +65,8 @@ const disass_insn_t instruction_list[] = {
     /*UNTESTED*/{ "ceilf.sul"   , N850_CEILFSUL     ,    4, 0xFFF2F444  , 0x07F20444  , 2,   OP_TYPE_MOV, COND_NV, {{0x000f000,  12,  0,  0, 4, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
     /*UNTESTED*/{ "ceilf.suw"   , N850_CEILFSUW     ,    4, 0xFFF2FC40  , 0x07F20440  , 2,   OP_TYPE_MOV, COND_NV, {{0x000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
     /*UNTESTED*/{ "ceilf.sw"   , N850_CEILFSW     ,    4, 0xFFE2FC40  , 0x07E20440  , 2,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    /*UNTESTED*/{ "cmovf.s"   , N850_CMOVFS     ,    4, 0xFFFFFC0E  , 0x07E00400  , 4,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 3, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CR}, {0}}},
-    { "cmpf.s"   , N850_CMPFSF     ,    4, 0xFFFF7C2E , 0x07E00420  , 4,   OP_TYPE_CMP, COND_NV, {{0x7800,  11,  0,  0, 4, UNSIGNED, 0, TYPE_COND}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 3, TYPE_IMM}, {0}}},
+    /*UNTESTED*/{ "cmovf.s"   , N850_CMOVFS     ,    4, 0xFFFFFC0E  , 0x07E00400  , 4,   OP_TYPE_MOV, COND_NV, {{0x0000f800,  11,  0,  0, 5, UNSIGNED, 3, TYPE_REG}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 0, TYPE_CCCC}, {0}}},
+    { "cmpf.s"   , N850_CMPFS     ,    4, 0xFFFF7C2E , 0x07E00420  , 4,   OP_TYPE_CMP, COND_NV, {{0x7800,  11,  0,  0, 4, UNSIGNED, 0, TYPE_COND}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 3, TYPE_IMM}, {0}}},
     /*{ "cmpf.s(F)"   , N850_CMPFSF     ,    4, 0xFFFF042E , 0x07E00420  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
     { "cmpf.s(UN)"   , N850_CMPFSUN     ,    4, 0xFFFF0C2E , 0x07E00C20  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
     { "cmpf.s(EQ)"   , N850_CMPFSEQ     ,    4, 0xFFFF142E , 0x07E01420  , 3,   OP_TYPE_CMP, COND_NV, {{0}, {0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000000E,  1,  0,  0, 3, UNSIGNED, 2, TYPE_IMM}, {0}}},
@@ -162,7 +162,7 @@ const disass_insn_t instruction_list[] = {
     /*UNTESTED*/{ "prepare"   , N850_PREPARE     ,    4, 0x7bfffe1  , 0x7800001  , 2,   OP_TYPE_OR, COND_NV, {{0x003e0000,  17,  0,  0, 5, UNSIGNED, 1, TYPE_IMM}, {0x001ffe0,  5,  0,  0, 12, UNSIGNED, 0, TYPE_LIST}, {0}, {0}, {0}}}, // TODO ????
     /*UNTESTED*/{ "reti"   , N850_RETI     ,    4, 0x7e00140  , 0x7e00140  , 0,   OP_TYPE_RET, COND_NV, {{0}, {0}, {0}, {0}, {0}}},
     { "sar"   , N850_SAR     ,    4, 0xffff00a0  , 0x07e000a0  , 2,   OP_TYPE_SHR, COND_NV, {{0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
-    /*UNTESTED*/{ "sasf"   , N850_SASF     ,    4, 0xffef0200  , 0x07e00200  , 2,   OP_TYPE_SHL, COND_NV, {{0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x000f0000,  16,  0,  0, 4, UNSIGNED, 0, TYPE_CR}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "sasf"   , N850_SASF     ,    4, 0xffef0200  , 0x07e00200  , 2,   OP_TYPE_SHL, COND_NV, {{0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x000f0000,  16,  0,  0, 4, UNSIGNED, 0, TYPE_CCCC}, {0}, {0}, {0}}},
     /*UNTESTED*/{ "satsubi"   , N850_SATSUBI     ,    4, 0xfe7fffff  , 0x6600000  , 3,   OP_TYPE_OR, COND_NV, {{0xF8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000FFFF,  0,  0,  0, 16, SIGNED, 0, TYPE_IMM}, {0}, {0}}},
     { "set1"   , N850_SET1     ,    4, 0x3fdfffff  , 0x7c00000  , 3,   OP_TYPE_AND, COND_NV, {{0x38000000,  27,  0,  0, 3, UNSIGNED, 0, TYPE_IMM}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 2, TYPE_REG_MEM}, {0x0000FFFF,  0,  0,  0, 16, SIGNED, 1, TYPE_MEM}, {0}, {0}}},
     /*UNTESTED*/{ "set1"   , N850_SET1R     ,    4, 0xffff00e0  , 0x07e000e0  , 2,   OP_TYPE_AND, COND_NV, {{0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
@@ -257,14 +257,14 @@ const disass_insn_t instruction_list[] = {
     /*UNTESTED*/{ "satsubr"   , N850_SATSUBR     ,    2, 0xf89f    , 0x0080       , 2,   OP_TYPE_SUB, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0xf800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
     { "shl"   , N850_SHLI     ,    2, 0xfadf    , 0x02c0       , 2,   OP_TYPE_SHL, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_IMM}, {0xf800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
     { "shr"   , N850_SHRI     ,    2, 0xfa9f    , 0x0280       , 2,   OP_TYPE_SHR, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_IMM}, {0xf800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
-    { "sld.b"   , N850_SLDB     ,    2, 0xfb7f    , 0x0300       , 3,   OP_TYPE_LOAD, COND_NV, {{0x007f,  0,  0,  0, 7, UNSIGNED, 0, TYPE_IMM}, {0x1000,  0,  0,  0, 0, UNSIGNED, 1, TYPE_EP}, {0xf800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
-    { "sld.bu"   , N850_SLDBU     ,    2, 0xf86f    , 0x0060       , 3,   OP_TYPE_LOAD, COND_NV, {{0x000f,  0,  0,  0, 4, UNSIGNED, 0, TYPE_IMM}, {0x1000,  0,  0,  0, 0, UNSIGNED, 1, TYPE_EP},{0xf800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
-    { "sld.h"   , N850_SLDH     ,    2, 0xfc7f    , 0x0400       , 3,   OP_TYPE_LOAD, COND_NV, {{0x007f,  0,  1,  0, 7, UNSIGNED, 0, TYPE_IMM}, {0x1000,  0,  0,  0, 0, UNSIGNED, 1, TYPE_EP},{0xf800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
-    { "sld.hu"   , N850_SLDHU     ,    2, 0xf87f    , 0x0070       , 3,   OP_TYPE_LOAD, COND_NV, {{0x000f,  0,  1,  0, 4, UNSIGNED, 0, TYPE_IMM}, {0x1000,  0,  0,  0, 0, UNSIGNED, 1, TYPE_EP},{0xf800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
-    { "sld.w"   , N850_SLDW     ,    2, 0xfd7e    , 0x0500       , 3,   OP_TYPE_LOAD, COND_NV, {{0x007e,  0,  1,  0, 6, UNSIGNED, 0, TYPE_IMM}, {0x1000,  0,  0,  0, 0, UNSIGNED, 1, TYPE_EP},{0xf800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
-    { "sst.b"   , N850_SSTB     ,    2, 0xfbff    , 0x0380       , 3,   OP_TYPE_STORE, COND_NV, {{0x007f,  0,  0,  0, 7, UNSIGNED, 1, TYPE_IMM}, {0xf800,  11,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x1000,  0,  0,  0, 0, UNSIGNED, 2, TYPE_EP}, {0}, {0}}},
-    { "sst.h"   , N850_SSTH     ,    2, 0xfCff    , 0x0480       , 3,   OP_TYPE_STORE, COND_NV, {{0x007f,  0,  1,  0, 7, UNSIGNED, 1, TYPE_IMM}, {0xf800,  11,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x1000,  0,  0,  0, 0, UNSIGNED, 2, TYPE_EP}, {0}, {0}}},
-    { "sst.w"   , N850_SSTW     ,    2, 0xfd7f    , 0x0501       , 3,   OP_TYPE_STORE, COND_NV, {{0x007e,  0,  1,  0, 6, UNSIGNED, 1, TYPE_IMM}, {0xf800,  11,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x1000,  0,  0,  0, 0, UNSIGNED, 2, TYPE_EP}, {0}, {0}}},
+    { "sld.b"   , N850_SLDB     ,    2, 0xfb7f    , 0x0300       , 3,   OP_TYPE_LOAD, COND_NV, {{0x007f,  0,  0,  0, 7, UNSIGNED, 0, TYPE_MEM}, {0x1000,  0,  0,  0, 0, UNSIGNED, 1, TYPE_EP}, {0xf800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
+    { "sld.bu"   , N850_SLDBU     ,    2, 0xf86f    , 0x0060       , 3,   OP_TYPE_LOAD, COND_NV, {{0x000f,  0,  0,  0, 4, UNSIGNED, 0, TYPE_MEM}, {0x1000,  0,  0,  0, 0, UNSIGNED, 1, TYPE_EP},{0xf800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
+    { "sld.h"   , N850_SLDH     ,    2, 0xfc7f    , 0x0400       , 3,   OP_TYPE_LOAD, COND_NV, {{0x007f,  0,  1,  0, 7, UNSIGNED, 0, TYPE_MEM}, {0x1000,  0,  0,  0, 0, UNSIGNED, 1, TYPE_EP},{0xf800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
+    { "sld.hu"   , N850_SLDHU     ,    2, 0xf87f    , 0x0070       , 3,   OP_TYPE_LOAD, COND_NV, {{0x000f,  0,  1,  0, 4, UNSIGNED, 0, TYPE_MEM}, {0x1000,  0,  0,  0, 0, UNSIGNED, 1, TYPE_EP},{0xf800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
+    { "sld.w"   , N850_SLDW     ,    2, 0xfd7e    , 0x0500       , 3,   OP_TYPE_LOAD, COND_NV, {{0x007e,  0,  1,  0, 6, UNSIGNED, 0, TYPE_MEM}, {0x1000,  0,  0,  0, 0, UNSIGNED, 1, TYPE_EP},{0xf800,  11,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0}, {0}}},
+    { "sst.b"   , N850_SSTB     ,    2, 0xfbff    , 0x0380       , 3,   OP_TYPE_STORE, COND_NV, {{0x007f,  0,  0,  0, 7, UNSIGNED, 1, TYPE_MEM}, {0xf800,  11,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x1000,  0,  0,  0, 0, UNSIGNED, 2, TYPE_EP}, {0}, {0}}},
+    { "sst.h"   , N850_SSTH     ,    2, 0xfCff    , 0x0480       , 3,   OP_TYPE_STORE, COND_NV, {{0x007f,  0,  1,  0, 7, UNSIGNED, 1, TYPE_MEM}, {0xf800,  11,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x1000,  0,  0,  0, 0, UNSIGNED, 2, TYPE_EP}, {0}, {0}}},
+    { "sst.w"   , N850_SSTW     ,    2, 0xfd7f    , 0x0501       , 3,   OP_TYPE_STORE, COND_NV, {{0x007e,  0,  1,  0, 6, UNSIGNED, 1, TYPE_MEM}, {0xf800,  11,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x1000,  0,  0,  0, 0, UNSIGNED, 2, TYPE_EP}, {0}, {0}}},
     { "sub"   , N850_SUB     ,    2, 0xF9BF    , 0x01a0       , 2,   OP_TYPE_SUB, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0xf800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
     { "subr"   , N850_SUBR     ,    2, 0xF99F    , 0x0180       , 2,   OP_TYPE_SUB, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0xf800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
     { "sxb"   , N850_SXB     ,    2, 0x00Bf    , 0x00A0       , 1,   OP_TYPE_SUB, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}, {0}}},
@@ -363,7 +363,7 @@ typedef struct {
   enum op_condition cond;
 } insn_t;
 */
-
+/*
 void pretty_print(insn_t* insn){
     printf("%s  ",insn->name);
     for (int i = 0; i < insn->n; i++) {
@@ -373,7 +373,7 @@ void pretty_print(insn_t* insn){
 }
 
 int main() {
-    /*uint8_t test[] = {0x41,0x8a,0xdc,0x09};
+    uint8_t test[] = {0x41,0x8a,0xdc,0x09};
     pretty_print(disassemble(test));
     
     printf("=========================\n");
@@ -394,8 +394,10 @@ int main() {
     printf("=========================\n");
     uint8_t test7[] = {0x9e,0x0d,0x63,0x00};
     pretty_print(disassemble(test7));
-    printf("=========================\n");*/
+    printf("=========================\n");
     uint8_t test8[] = {0xe2,0x07,0x16,0xe3};
     pretty_print(disassemble(test8));
     return 1;
 }
+
+*/
