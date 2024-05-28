@@ -61,8 +61,7 @@ static const char *cccc_name[] = {
 	"ns/p",
 	"INVALID",
 	"ge",
-	"gt"
-};
+	"gt"};
 
 static const char *cond_name[] = {
 	"f",
@@ -80,8 +79,7 @@ static const char *cond_name[] = {
 	"lt",
 	"nge",
 	"le",
-	"ngt"
-};
+	"ngt"};
 
 class NEC850 : public Architecture
 {
@@ -109,39 +107,72 @@ public:
 
 	std::string GetSysregName(int sysreg_id)
 	{
-		switch(sysreg_id) {
-			case NEC_SYSREG_EIPC: return "eipc";
-			case NEC_SYSREG_EIPSW: return "eipsw";
-			case NEC_SYSREG_FEPC: return "fepc";
-			case NEC_SYSREG_FEPSW: return "fepsw";
-			case NEC_SYSREG_PSW: return "psw";
-			case NEC_SYSREG_FPSR: return "fpsr";
-			case NEC_SYSREG_FPEPC: return "fpepc";
-			case NEC_SYSREG_FPST: return "fpst";
-			case NEC_SYSREG_FPCC: return "fpcc";
-			case NEC_SYSREG_FPCFG: return "fpcfg";
-			case NEC_SYSREG_FPEC: return "fpec";
-			case NEC_SYSREG_EIIC: return "eiic";
-			case NEC_SYSREG_FEIC: return "feic";
-			case NEC_SYSREG_CTPC: return "ctpc";
-			case NEC_SYSREG_CTPSW: return "ctpsw";
-			case NEC_SYSREG_CTBP: return "ctbp";
-			case NEC_SYSREG_EIWR: return "eiwr";
-			case NEC_SYSREG_FEWR: return "fewr";
-			case NEC_SYSREG_BSEL: return "bsel";
-			case NEC_SYSREG_MCFG0: return "mcfg0";
-			case NEC_SYSREG_RBASE: return "rbase";
-			case NEC_SYSREG_EBASE: return "ebase";
-			case NEC_SYSREG_INTBP: return "intbp";
-			case NEC_SYSREG_MCTL: return "mctl";
-			case NEC_SYSREG_PID: return "pid";
-			case NEC_SYSREG_SCCFG: return "sccfg";
-			case NEC_SYSREG_SCBP: return "scbp";
-			case NEC_SYSREG_HTCFG0: return "htcfg0";
-			case NEC_SYSREG_MEA: return "mea";
-			case NEC_SYSREG_ASID: return "asid";
-			case NEC_SYSREG_MEI: return "mei";
-			default: return "INVALID";
+		switch (sysreg_id)
+		{
+		case NEC_SYSREG_EIPC:
+			return "eipc";
+		case NEC_SYSREG_EIPSW:
+			return "eipsw";
+		case NEC_SYSREG_FEPC:
+			return "fepc";
+		case NEC_SYSREG_FEPSW:
+			return "fepsw";
+		case NEC_SYSREG_PSW:
+			return "psw";
+		case NEC_SYSREG_FPSR:
+			return "fpsr";
+		case NEC_SYSREG_FPEPC:
+			return "fpepc";
+		case NEC_SYSREG_FPST:
+			return "fpst";
+		case NEC_SYSREG_FPCC:
+			return "fpcc";
+		case NEC_SYSREG_FPCFG:
+			return "fpcfg";
+		case NEC_SYSREG_FPEC:
+			return "fpec";
+		case NEC_SYSREG_EIIC:
+			return "eiic";
+		case NEC_SYSREG_FEIC:
+			return "feic";
+		case NEC_SYSREG_CTPC:
+			return "ctpc";
+		case NEC_SYSREG_CTPSW:
+			return "ctpsw";
+		case NEC_SYSREG_CTBP:
+			return "ctbp";
+		case NEC_SYSREG_EIWR:
+			return "eiwr";
+		case NEC_SYSREG_FEWR:
+			return "fewr";
+		case NEC_SYSREG_BSEL:
+			return "bsel";
+		case NEC_SYSREG_MCFG0:
+			return "mcfg0";
+		case NEC_SYSREG_RBASE:
+			return "rbase";
+		case NEC_SYSREG_EBASE:
+			return "ebase";
+		case NEC_SYSREG_INTBP:
+			return "intbp";
+		case NEC_SYSREG_MCTL:
+			return "mctl";
+		case NEC_SYSREG_PID:
+			return "pid";
+		case NEC_SYSREG_SCCFG:
+			return "sccfg";
+		case NEC_SYSREG_SCBP:
+			return "scbp";
+		case NEC_SYSREG_HTCFG0:
+			return "htcfg0";
+		case NEC_SYSREG_MEA:
+			return "mea";
+		case NEC_SYSREG_ASID:
+			return "asid";
+		case NEC_SYSREG_MEI:
+			return "mei";
+		default:
+			return "INVALID";
 		}
 	}
 
@@ -233,7 +264,7 @@ public:
 				FLAG_Z, FLAG_S, FLAG_OV};
 		case FLAG_WRITE_CYOVSZ:
 			return vector<uint32_t>{
-				FLAG_Z, FLAG_S, FLAG_OV ,FLAG_CY};
+				FLAG_Z, FLAG_S, FLAG_OV, FLAG_CY};
 		case FLAG_WRITE_ALL:
 			return vector<uint32_t>{
 				FLAG_CY, FLAG_Z, FLAG_OV, FLAG_S};
@@ -309,7 +340,7 @@ public:
 			NEC_REG_R0, NEC_REG_R1, NEC_REG_R2, NEC_REG_SP, NEC_REG_R4, NEC_REG_R5, NEC_REG_R6, NEC_REG_R7,
 			NEC_REG_R8, NEC_REG_R9, NEC_REG_R10, NEC_REG_R11, NEC_REG_R12, NEC_REG_R13, NEC_REG_R14, NEC_REG_R15,
 			NEC_REG_R16, NEC_REG_R17, NEC_REG_R18, NEC_REG_R19, NEC_REG_R20, NEC_REG_R21, NEC_REG_R22, NEC_REG_R23,
-			NEC_REG_R24, NEC_REG_R25, NEC_REG_R26, NEC_REG_R27, NEC_REG_R28,NEC_REG_R29, NEC_REG_EP, NEC_REG_LP, NEC_REG_PC};
+			NEC_REG_R24, NEC_REG_R25, NEC_REG_R26, NEC_REG_R27, NEC_REG_R28, NEC_REG_R29, NEC_REG_EP, NEC_REG_LP, NEC_REG_PC};
 	}
 
 	virtual vector<uint32_t> GetAllRegisters() override
@@ -318,7 +349,7 @@ public:
 			NEC_REG_R0, NEC_REG_R1, NEC_REG_R2, NEC_REG_SP, NEC_REG_R4, NEC_REG_R5, NEC_REG_R6, NEC_REG_R7,
 			NEC_REG_R8, NEC_REG_R9, NEC_REG_R10, NEC_REG_R11, NEC_REG_R12, NEC_REG_R13, NEC_REG_R14, NEC_REG_R15,
 			NEC_REG_R16, NEC_REG_R17, NEC_REG_R18, NEC_REG_R19, NEC_REG_R20, NEC_REG_R21, NEC_REG_R22, NEC_REG_R23,
-			NEC_REG_R24, NEC_REG_R25, NEC_REG_R26, NEC_REG_R27, NEC_REG_R28,NEC_REG_R29, NEC_REG_EP, NEC_REG_LP, NEC_REG_PC,
+			NEC_REG_R24, NEC_REG_R25, NEC_REG_R26, NEC_REG_R27, NEC_REG_R28, NEC_REG_R29, NEC_REG_EP, NEC_REG_LP, NEC_REG_PC,
 			// system registers
 			NEC_SYSREG_EIPC,
 			NEC_SYSREG_EIPSW,
@@ -350,8 +381,7 @@ public:
 			NEC_SYSREG_HTCFG0,
 			NEC_SYSREG_MEA,
 			NEC_SYSREG_ASID,
-			NEC_SYSREG_MEI
-		};
+			NEC_SYSREG_MEI};
 
 		return result;
 	}
@@ -519,13 +549,6 @@ public:
 			break;
 			case N850_ADD:
 			{
-				/*if (addr == 0x000d0d0c) {
-					LogInfo("%s AT 0x%x: N: %d", insn->name, (uint32_t)addr,insn->n);
-					LogInfo("%s OP[0] type: %d: value: %d", insn->name, insn->fields[0].type,insn->fields[0].value);
-					LogInfo("%s OP[1] type: %d: value: %d", insn->name, insn->fields[1].type,insn->fields[1].value);
-					LogInfo("%s OP[2] type: %d: value: %d", insn->name, insn->fields[2].type,insn->fields[2].value);
-				}*/
-				
 				il.AddInstruction(
 					il.SetRegister(
 						4,
@@ -1172,6 +1195,11 @@ public:
 				}
 			}
 			break;
+			case N850_BSH:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
 			case N850_BINS:
 			{
 				il.AddInstruction(il.Unimplemented());
@@ -1183,11 +1211,6 @@ public:
 			}
 			break;
 			case N850_BINS3:
-			{
-				il.AddInstruction(il.Unimplemented());
-			}
-			break;
-			case N850_BSH:
 			{
 				il.AddInstruction(il.Unimplemented());
 			}
@@ -1308,6 +1331,56 @@ public:
 				il.AddInstruction(il.Unimplemented());
 			}
 			break;
+			case N850_CVTFHS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_CVTFLS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_CVTFSL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_CVTFSH:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_CVTFSUL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_CVTFSUW:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_CVTFSW:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_CVTFULS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_CVTFUWS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_CVTFWS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
 			case N850_DBRET:
 			{
 				il.AddInstruction(il.Unimplemented());
@@ -1338,6 +1411,11 @@ public:
 				il.AddInstruction(il.Unimplemented());
 			}
 			break;
+			case N850_DIVFS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
 			case N850_DIVH:
 			{
 				il.AddInstruction(il.Unimplemented());
@@ -1353,6 +1431,16 @@ public:
 				il.AddInstruction(il.Unimplemented());
 			}
 			break;
+			case N850_DIVQ:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_DIVQU:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
 			case N850_DIVU:
 			{
 				il.AddInstruction(il.Unimplemented());
@@ -1363,12 +1451,72 @@ public:
 				il.AddInstruction(il.Unimplemented());
 			}
 			break;
+			case N850_EIRET:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_FERET:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_FETRAP:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_FLOORFSL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_FLOORFSUL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_FLOORFSUW:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_FLOORFSW:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_FMAFS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_FMSFS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_FNMAFS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_FNMSFS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
 			case N850_HALT:
 			{
 				il.AddInstruction(il.Unimplemented());
 			}
 			break;
 			case N850_HSW:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_HSH:
 			{
 				il.AddInstruction(il.Unimplemented());
 			}
@@ -1404,6 +1552,26 @@ public:
 			}
 			break;
 			case N850_JR:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_JRL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_LDBL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_LDBUL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_LDDW:
 			{
 				il.AddInstruction(il.Unimplemented());
 			}
@@ -1539,6 +1707,61 @@ public:
 			}
 			break;
 			case N850_MOVHI:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_MAXFS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_MINFS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_MULFS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_NEGFS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_RECIPFS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_EOUNDFSL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_EOUNDFSUL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_ROUNDFSUW:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_ROUNDFSW:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_RSQRTFS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_SQRTFS:
 			{
 				il.AddInstruction(il.Unimplemented());
 			}
@@ -1950,6 +2173,36 @@ public:
 				il.AddInstruction(il.Unimplemented());
 			}
 			break;
+			case N850_SUBFS:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_TRFSR:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_TRNCFSL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_TRNCFSUL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_TRNCFSUW:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_TRNCFSW:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
 			case N850_XOR:
 			{
 				il.AddInstruction(il.Unimplemented());
@@ -1994,8 +2247,154 @@ public:
 				);
 			}
 			break;
+			case N850_LDLW:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_LOOP:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_MAC:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_MACU:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_POPSP:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_PUSHSP:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_RIEI:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_ROTL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_ROTLI:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_SATADDR:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_SATSUBL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_SBF:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_SCH0L:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_SCH0R:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_SCH1L:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_SCH1R:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_SHLL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_SHRL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_SNOOZE:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_STCW:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_LDHL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_LDHUL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_LDWL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_STDL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_STDW:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_STHL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_STWL:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_RIE:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+			case N850_SHRR:
+			{
+				il.AddInstruction(il.Unimplemented());
+			}
+			break;
+
 			default:
-				break;
+				il.AddInstruction(il.Unimplemented());
 			}
 
 			free(insn);
@@ -2003,6 +2402,12 @@ public:
 		}
 		free(insn);
 		return false;
+		/*if (addr == 0x000d0d0c) {
+			LogInfo("%s AT 0x%x: N: %d", insn->name, (uint32_t)addr,insn->n);
+			LogInfo("%s OP[0] type: %d: value: %d", insn->name, insn->fields[0].type,insn->fields[0].value);
+			LogInfo("%s OP[1] type: %d: value: %d", insn->name, insn->fields[1].type,insn->fields[1].value);
+			LogInfo("%s OP[2] type: %d: value: %d", insn->name, insn->fields[2].type,insn->fields[2].value);
+		}*/
 	}
 
 	virtual bool GetInstructionInfo(const uint8_t *data, uint64_t addr, size_t maxLen, InstructionInfo &result) override
@@ -2031,7 +2436,7 @@ public:
 				}
 				else
 				{
-					//LogInfo("CJMP WENT WRONG AT 0x%x", addr);
+					// LogInfo("CJMP WENT WRONG AT 0x%x", addr);
 					free(insn);
 					return false;
 				}
@@ -2098,24 +2503,24 @@ public:
 					if (insn->fields[op_index].value == 0)
 						break;
 					if (insn->fields[op_index].sign)
-						snprintf(hex_val, 20,  "%s0x%x", ((int32_t)insn->fields[op_index].value < 0) ? "-" : "", ((int32_t)insn->fields[op_index].value < 0) ? -(int32_t)insn->fields[op_index].value : (int32_t)insn->fields[op_index].value);
+						snprintf(hex_val, 20, "%s0x%x", ((int32_t)insn->fields[op_index].value < 0) ? "-" : "", ((int32_t)insn->fields[op_index].value < 0) ? -(int32_t)insn->fields[op_index].value : (int32_t)insn->fields[op_index].value);
 					else
-						snprintf(hex_val, 20,  "0x%x",(uint32_t)insn->fields[op_index].value);
+						snprintf(hex_val, 20, "0x%x", (uint32_t)insn->fields[op_index].value);
 					result.emplace_back(IntegerToken, hex_val, insn->fields[op_index].value);
 					break;
 				case TYPE_IMM:
 					if (insn->fields[op_index].sign)
-						snprintf(hex_val, 20,  "%s0x%x", ((int32_t)insn->fields[op_index].value < 0) ? "-" : "", ((int32_t)insn->fields[op_index].value < 0) ? -(int32_t)insn->fields[op_index].value : (int32_t)insn->fields[op_index].value);
+						snprintf(hex_val, 20, "%s0x%x", ((int32_t)insn->fields[op_index].value < 0) ? "-" : "", ((int32_t)insn->fields[op_index].value < 0) ? -(int32_t)insn->fields[op_index].value : (int32_t)insn->fields[op_index].value);
 					else
-						snprintf(hex_val, 20,  "0x%x",(uint32_t)insn->fields[op_index].value);
+						snprintf(hex_val, 20, "0x%x", (uint32_t)insn->fields[op_index].value);
 					result.emplace_back(IntegerToken, hex_val, insn->fields[op_index].value);
 					break;
 				case TYPE_JMP:
-					snprintf(hex_val, 20,  "0x%x", (uint32_t)(insn->fields[op_index].value) + (uint32_t) addr); // + (uint32_t) addr));
+					snprintf(hex_val, 20, "0x%x", (uint32_t)(insn->fields[op_index].value) + (uint32_t)addr); // + (uint32_t) addr));
 					result.emplace_back(IntegerToken, hex_val, insn->fields[op_index].value + addr);
 					break;
 				case TYPE_LOOP:
-					snprintf(hex_val, 20,  "0x%x", (uint32_t) addr - (uint32_t)(insn->fields[op_index].value)); // + (uint32_t) addr));
+					snprintf(hex_val, 20, "0x%x", (uint32_t)addr - (uint32_t)(insn->fields[op_index].value)); // + (uint32_t) addr));
 					result.emplace_back(IntegerToken, hex_val, addr - insn->fields[op_index].value);
 					break;
 				case TYPE_CCCC:
