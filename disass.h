@@ -343,7 +343,7 @@ typedef struct {
   insn_op_t fields[10];
   uint16_t n;
   uint16_t size;
-  enum op_type op_type;
+  enum insn_type op_type;
   enum op_condition cond;
 } insn_t;
 

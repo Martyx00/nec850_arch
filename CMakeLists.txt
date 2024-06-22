@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 cmake_minimum_required(VERSION 3.24)
-set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
+set(CMAKE_OSX_ARCHITECTURES "arm64")
 project(nec850_arch CXX C)
 
 set(CMAKE_CXX_STANDARD 17)

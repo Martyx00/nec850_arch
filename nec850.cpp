@@ -237,7 +237,8 @@ public:
 		return vector<uint32_t>{
 			FLAG_WRITE_NONE,
 			FLAG_WRITE_ALL,
-			FLAG_WRITE_OVSZ};
+			FLAG_WRITE_OVSZ,
+			FLAG_WRITE_Z};
 	}
 
 	virtual string GetFlagWriteTypeName(uint32_t writeType) override
@@ -248,6 +249,8 @@ public:
 			return "ovsz";
 		case FLAG_WRITE_CYOVSZ:
 			return "cyovsz";
+		case FLAG_WRITE_Z:
+			return "z";
 		case FLAG_WRITE_ALL:
 			return "*";
 		default:
@@ -268,6 +271,9 @@ public:
 		case FLAG_WRITE_ALL:
 			return vector<uint32_t>{
 				FLAG_CY, FLAG_Z, FLAG_OV, FLAG_S};
+		case FLAG_WRITE_Z:
+			return vector<uint32_t>{
+				FLAG_Z};
 		default:
 			return vector<uint32_t>();
 		}
@@ -532,7 +538,7 @@ public:
 	virtual bool GetInstructionLowLevelIL(const uint8_t *data, uint64_t addr, size_t &len, LowLevelILFunction &il) override
 	{
 		insn_t *insn;
-		if (insn = disassemble(data))
+		if ((insn = disassemble(data)))
 		{
 			len = insn->size;
 			BNLowLevelILLabel *true_label = NULL;
@@ -544,7 +550,19 @@ public:
 			{
 			case N850_ABSFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.FloatAbs(
+							4,
+							il.Register(
+								4,
+								insn->fields[0].value
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_ADD:
@@ -596,12 +614,155 @@ public:
 			break;
 			case N850_ADDFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.FloatAdd(
+							4,
+							il.Register(
+								4,
+								insn->fields[0].value
+							),
+							il.Register(
+								4,
+								insn->fields[1].value
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_ADF:
 			{
-				il.AddInstruction(il.Unimplemented());
+				if (insn->fields[0].value == 5) {
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							insn->fields[3].value,
+							il.Add(
+								4,
+								il.Add(
+									4,
+									il.Register(
+										4,
+										insn->fields[2].value
+									),
+									il.Register(
+										4,
+										insn->fields[1].value
+									)
+								),
+								il.Const(
+									4,
+									1
+								),
+								FLAG_WRITE_CYOVSZ
+
+							)
+							
+						)
+					);
+				} else {
+					switch (insn->fields[0].value)
+					{
+					case 2:
+						condition = il.FlagCondition(LLFC_E);
+						break;
+					case 10:
+						condition = il.FlagCondition(LLFC_NE);
+						break;
+					case 11:
+						condition = il.FlagCondition(LLFC_UGT);
+						break;
+					case 3:
+						condition = il.FlagCondition(LLFC_ULE);
+						break;
+					case 0:
+						condition = il.FlagCondition(LLFC_O);
+						break;
+					case 8:
+						condition = il.FlagCondition(LLFC_NO);
+						break;
+					case 1:
+						condition = il.FlagCondition(LLFC_ULT);
+						break;
+					case 9:
+						condition = il.FlagCondition(LLFC_UGE);
+						break;
+					case 6:
+						condition = il.FlagCondition(LLFC_SLT);
+						break;
+					case 14:
+						condition = il.FlagCondition(LLFC_SGE);
+						break;
+					case 7:
+						condition = il.FlagCondition(LLFC_SLE);
+						break;
+					case 15:
+						condition = il.FlagCondition(LLFC_SGT);
+						break;
+					case 4:
+						condition = il.FlagCondition(LLFC_NEG);
+						break;
+					case 12:
+						condition = il.FlagCondition(LLFC_POS);
+						break;
+					default:
+						break;
+					}
+					
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+					il.MarkLabel(true_tag);
+						il.AddInstruction(
+							il.SetRegister(
+								4,
+								insn->fields[3].value,
+								il.Add(
+									4,
+									il.Add(
+										4,
+										il.Register(
+											4,
+											insn->fields[2].value
+										),
+										il.Register(
+											4,
+											insn->fields[1].value
+										)
+									),
+									il.Const(
+										4,
+										1
+									),
+									FLAG_WRITE_CYOVSZ
+
+								)
+								
+							)
+						);
+					il.MarkLabel(false_tag);
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							insn->fields[3].value,
+							il.Add(
+								4,
+								il.Register(
+									4,
+									insn->fields[2].value
+								),
+								il.Register(
+									4,
+									insn->fields[1].value
+								),
+								FLAG_WRITE_CYOVSZ
+							)
+						)
+					);
+
+				}
+				
 			}
 			break;
 			case N850_ADDI:
@@ -1197,7 +1358,95 @@ public:
 			break;
 			case N850_BSH:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// TODO test
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Or(
+							4,
+							il.Or(
+								4,
+								il.ShiftLeft(
+									4,
+									il.And(
+										4,
+										il.Register(
+											4,
+											insn->fields[0].value
+										),
+										il.Const(
+											4,
+											0xff
+										)
+									),
+									il.Const(
+										4,
+										8
+									)
+								),
+								il.LogicalShiftRight(
+									4,
+									il.And(
+										4,
+										il.Register(
+											4,
+											insn->fields[0].value
+										),
+										il.Const(
+											4,
+											0xff00
+										)
+									),
+									il.Const(
+										4,
+										8
+									)
+								)
+
+							),
+							il.Or(
+								4,
+								il.LogicalShiftRight(
+									4,
+									il.And(
+										4,
+										il.Register(
+											4,
+											insn->fields[0].value
+										),
+										il.Const(
+											4,
+											0xff000000
+										)
+									),
+									il.Const(
+										4,
+										8
+									)
+								),
+								il.ShiftLeft(
+									4,
+									il.And(
+										4,
+										il.Register(
+											4,
+											insn->fields[0].value
+										),
+										il.Const(
+											4,
+											0xff0000
+										)
+									),
+									il.Const(
+										4,
+										8
+									)
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_BINS:
@@ -1217,7 +1466,94 @@ public:
 			break;
 			case N850_BSW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Or(
+							4,
+							il.Or(
+								4,
+								il.ShiftLeft(
+									4,
+									il.And(
+										4,
+										il.Register(
+											4,
+											insn->fields[0].value
+										),
+										il.Const(
+											4,
+											0xff
+										)
+									),
+									il.Const(
+										4,
+										24
+									)
+								),
+								il.ShiftLeft(
+									4,
+									il.And(
+										4,
+										il.Register(
+											4,
+											insn->fields[0].value
+										),
+										il.Const(
+											4,
+											0xff00
+										)
+									),
+									il.Const(
+										4,
+										8
+									)
+								)
+
+							),
+							il.Or(
+								4,
+								il.LogicalShiftRight(
+									4,
+									il.And(
+										4,
+										il.Register(
+											4,
+											insn->fields[0].value
+										),
+										il.Const(
+											4,
+											0xff000000
+										)
+									),
+									il.Const(
+										4,
+										24
+									)
+								),
+								il.LogicalShiftRight(
+									4,
+									il.And(
+										4,
+										il.Register(
+											4,
+											insn->fields[0].value
+										),
+										il.Const(
+											4,
+											0xff0000
+										)
+									),
+									il.Const(
+										4,
+										8
+									)
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_CALLT:
@@ -1257,7 +1593,52 @@ public:
 			break;
 			case N850_CLR1:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Store(
+						4,
+						il.Add(
+							4,
+							il.Register(
+								4,
+								insn->fields[2].value
+							),
+							il.SignExtend(
+								4,
+								il.Const(
+									2,
+									insn->fields[1].value
+								)
+							)
+						),
+						il.And(
+							4,
+							il.Load(
+								4,
+								il.Add(
+									4,
+									il.Register(
+										4,
+										insn->fields[2].value
+									),
+									il.SignExtend(
+										4,
+										il.Const(
+											2,
+											insn->fields[1].value
+										)
+									)
+								)
+							),
+							il.Const(
+								4,
+								~(1 << insn->fields[0].value) & 0xffffffff
+								//((1 << (instr->fields[4].value - instr->fields[3].value + 1)) - 1) << (31 - instr->fields[4].value)
+							),
+							FLAG_WRITE_Z
+						)
+						
+					)
+				);
 			}
 			break;
 			case N850_CLR1R:
@@ -1267,7 +1648,93 @@ public:
 			break;
 			case N850_CMOV:
 			{
-				il.AddInstruction(il.Unimplemented());
+				if (insn->fields[0].value == 5) {
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							insn->fields[3].value,
+							il.Register(
+								4,
+								insn->fields[1].value
+							)
+						)
+					);
+				} else {
+					switch (insn->fields[0].value)
+					{
+					case 2:
+						condition = il.FlagCondition(LLFC_E);
+						break;
+					case 10:
+						condition = il.FlagCondition(LLFC_NE);
+						break;
+					case 11:
+						condition = il.FlagCondition(LLFC_UGT);
+						break;
+					case 3:
+						condition = il.FlagCondition(LLFC_ULE);
+						break;
+					case 0:
+						condition = il.FlagCondition(LLFC_O);
+						break;
+					case 8:
+						condition = il.FlagCondition(LLFC_NO);
+						break;
+					case 1:
+						condition = il.FlagCondition(LLFC_ULT);
+						break;
+					case 9:
+						condition = il.FlagCondition(LLFC_UGE);
+						break;
+					case 6:
+						condition = il.FlagCondition(LLFC_SLT);
+						break;
+					case 14:
+						condition = il.FlagCondition(LLFC_SGE);
+						break;
+					case 7:
+						condition = il.FlagCondition(LLFC_SLE);
+						break;
+					case 15:
+						condition = il.FlagCondition(LLFC_SGT);
+						break;
+					case 4:
+						condition = il.FlagCondition(LLFC_NEG);
+						break;
+					case 12:
+						condition = il.FlagCondition(LLFC_POS);
+						break;
+					case 13:
+						condition = il.Unimplemented();
+						break;
+					default:
+						break;
+					}
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+					il.MarkLabel(true_tag);
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							insn->fields[3].value,
+							il.Register(
+								4,
+								insn->fields[1].value
+							)
+						)
+					);
+					il.MarkLabel(false_tag);
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							insn->fields[3].value,
+							il.Register(
+								4,
+								insn->fields[2].value
+							)
+						)
+					);
+				}
+				
 			}
 			break;
 			case N850_CMOVFS:
@@ -1277,7 +1744,98 @@ public:
 			break;
 			case N850_CMOVI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				if (insn->fields[0].value == 5) {
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							insn->fields[3].value,
+							il.SignExtend(
+								4,
+								il.Const(
+									1,
+									insn->fields[1].value
+								)
+							)
+						)
+					);
+				} else {
+					switch (insn->fields[0].value)
+					{
+					case 2:
+						condition = il.FlagCondition(LLFC_E);
+						break;
+					case 10:
+						condition = il.FlagCondition(LLFC_NE);
+						break;
+					case 11:
+						condition = il.FlagCondition(LLFC_UGT);
+						break;
+					case 3:
+						condition = il.FlagCondition(LLFC_ULE);
+						break;
+					case 0:
+						condition = il.FlagCondition(LLFC_O);
+						break;
+					case 8:
+						condition = il.FlagCondition(LLFC_NO);
+						break;
+					case 1:
+						condition = il.FlagCondition(LLFC_ULT);
+						break;
+					case 9:
+						condition = il.FlagCondition(LLFC_UGE);
+						break;
+					case 6:
+						condition = il.FlagCondition(LLFC_SLT);
+						break;
+					case 14:
+						condition = il.FlagCondition(LLFC_SGE);
+						break;
+					case 7:
+						condition = il.FlagCondition(LLFC_SLE);
+						break;
+					case 15:
+						condition = il.FlagCondition(LLFC_SGT);
+						break;
+					case 4:
+						condition = il.FlagCondition(LLFC_NEG);
+						break;
+					case 12:
+						condition = il.FlagCondition(LLFC_POS);
+						break;
+					case 13:
+						condition = il.Unimplemented();
+						break;
+					default:
+						break;
+					}
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+					il.MarkLabel(true_tag);
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							insn->fields[3].value,
+							il.SignExtend(
+								4,
+								il.Const(
+									1,
+									insn->fields[1].value
+								)
+							)
+						)
+					);
+					il.MarkLabel(false_tag);
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							insn->fields[3].value,
+							il.Register(
+								4,
+								insn->fields[2].value
+							)
+						)
+					);
+				}
 			}
 			break;
 			case N850_CMP:
@@ -1328,7 +1886,7 @@ public:
 			break;
 			case N850_CTRET:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(il.Return(NEC_SYSREG_CTPC));
 			}
 			break;
 			case N850_CVTFHS:
@@ -1408,7 +1966,42 @@ public:
 			break;
 			case N850_DIV:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.DivSigned(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.Register(
+								4,
+								insn->fields[0].value
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.ModSigned(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.Register(
+								4,
+								insn->fields[0].value
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
 			}
 			break;
 			case N850_DIVFS:
@@ -1418,32 +2011,239 @@ public:
 			break;
 			case N850_DIVH:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.DivSigned(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.SignExtend(
+								4,
+								il.Register(
+									2,
+									insn->fields[0].value
+								)
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
 			}
 			break;
 			case N850_DIVHR:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.DivSigned(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.SignExtend(
+								4,
+								il.Register(
+									2,
+									insn->fields[0].value
+								)
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.ModSigned(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.SignExtend(
+								4,
+								il.Register(
+									2,
+									insn->fields[0].value
+								)
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
 			}
 			break;
 			case N850_DIVHU:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.DivUnsigned(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.ZeroExtend(
+								4,
+								il.Register(
+									2,
+									insn->fields[0].value
+								)
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.ModUnsigned(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.ZeroExtend(
+								4,
+								il.Register(
+									2,
+									insn->fields[0].value
+								)
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
 			}
 			break;
 			case N850_DIVQ:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.DivSigned(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.Register(
+								4,
+								insn->fields[0].value
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.ModSigned(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.Register(
+								4,
+								insn->fields[0].value
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
 			}
 			break;
 			case N850_DIVQU:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.DivUnsigned(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.Register(
+								4,
+								insn->fields[0].value
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.ModUnsigned(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.Register(
+								4,
+								insn->fields[0].value
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
 			}
 			break;
 			case N850_DIVU:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.DivUnsigned(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.Register(
+								4,
+								insn->fields[0].value
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.ModUnsigned(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.Register(
+								4,
+								insn->fields[0].value
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
 			}
 			break;
 			case N850_EI:
@@ -2413,7 +3213,7 @@ public:
 	virtual bool GetInstructionInfo(const uint8_t *data, uint64_t addr, size_t maxLen, InstructionInfo &result) override
 	{
 		insn_t *insn;
-		if (insn = disassemble(data))
+		if ((insn = disassemble(data)))
 		{
 			result.length = insn->size;
 			uint32_t target;
@@ -2472,7 +3272,7 @@ public:
 	{
 		insn_t *insn;
 		char tmp[256] = {0};
-		if (insn = disassemble(data))
+		if ((insn = disassemble(data)))
 		{
 
 			int name_len = strlen(insn->name);
