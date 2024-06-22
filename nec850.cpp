@@ -443,6 +443,8 @@ public:
 
 		if (regId >= NEC_REG_R0 && regId <= NEC_REG_PC)
 			result = reg_name[regId];
+		else if (regId >= NEC_SYSREG_EIPC && regId <= NEC_SYSREG_MEI)
+			return GetSysregName(regId);
 		else
 			result = "";
 		return result;
@@ -519,6 +521,68 @@ public:
 			return RegisterInfo(NEC_REG_LP, 0, 4);
 		case NEC_REG_PC:
 			return RegisterInfo(NEC_REG_PC, 0, 4);
+		case NEC_SYSREG_EIPC:
+			return RegisterInfo(NEC_SYSREG_EIPC, 0, 4);
+		case NEC_SYSREG_EIPSW:
+			return RegisterInfo(NEC_SYSREG_EIPSW, 0, 4);
+		case NEC_SYSREG_FEPC:
+			return RegisterInfo(NEC_SYSREG_FEPC, 0, 4);
+		case NEC_SYSREG_FEPSW:
+			return RegisterInfo(NEC_SYSREG_FEPSW, 0, 4);
+		case NEC_SYSREG_PSW:
+			return RegisterInfo(NEC_SYSREG_PSW, 0, 4);
+		case NEC_SYSREG_FPSR:
+			return RegisterInfo(NEC_SYSREG_FPSR, 0, 4);
+		case NEC_SYSREG_FPEPC:
+			return RegisterInfo(NEC_SYSREG_FPEPC, 0, 4);
+		case NEC_SYSREG_FPST:
+			return RegisterInfo(NEC_SYSREG_FPST, 0, 4);
+		case NEC_SYSREG_FPCC:
+			return RegisterInfo(NEC_SYSREG_FPCC, 0, 4);
+		case NEC_SYSREG_FPCFG:
+			return RegisterInfo(NEC_SYSREG_FPCFG, 0, 4);
+		case NEC_SYSREG_FPEC:
+			return RegisterInfo(NEC_SYSREG_FPEC, 0, 4);
+		case NEC_SYSREG_EIIC:
+			return RegisterInfo(NEC_SYSREG_EIIC, 0, 4);
+		case NEC_SYSREG_FEIC:
+			return RegisterInfo(NEC_SYSREG_FEIC, 0, 4);
+		case NEC_SYSREG_CTPC:
+			return RegisterInfo(NEC_SYSREG_CTPC, 0, 4);
+		case NEC_SYSREG_CTPSW:
+			return RegisterInfo(NEC_SYSREG_CTPSW, 0, 4);
+		case NEC_SYSREG_CTBP:
+			return RegisterInfo(NEC_SYSREG_CTBP, 0, 4);
+		case NEC_SYSREG_EIWR:
+			return RegisterInfo(NEC_SYSREG_EIWR, 0, 4);
+		case NEC_SYSREG_FEWR:
+			return RegisterInfo(NEC_SYSREG_FEWR, 0, 4);
+		case NEC_SYSREG_BSEL:
+			return RegisterInfo(NEC_SYSREG_BSEL, 0, 4);
+		case NEC_SYSREG_MCFG0:
+			return RegisterInfo(NEC_SYSREG_MCFG0, 0, 4);
+		case NEC_SYSREG_RBASE:
+			return RegisterInfo(NEC_SYSREG_RBASE, 0, 4);
+		case NEC_SYSREG_EBASE:
+			return RegisterInfo(NEC_SYSREG_EBASE, 0, 4);
+		case NEC_SYSREG_INTBP:
+			return RegisterInfo(NEC_SYSREG_INTBP, 0, 4);
+		case NEC_SYSREG_MCTL:
+			return RegisterInfo(NEC_SYSREG_MCTL, 0, 4);
+		case NEC_SYSREG_PID:
+			return RegisterInfo(NEC_SYSREG_PID, 0, 4);
+		case NEC_SYSREG_SCCFG:
+			return RegisterInfo(NEC_SYSREG_SCCFG, 0, 4);
+		case NEC_SYSREG_SCBP:
+			return RegisterInfo(NEC_SYSREG_SCBP, 0, 4);
+		case NEC_SYSREG_HTCFG0:
+			return RegisterInfo(NEC_SYSREG_HTCFG0, 0, 4);
+		case NEC_SYSREG_MEA:
+			return RegisterInfo(NEC_SYSREG_MEA, 0, 4);
+		case NEC_SYSREG_ASID:
+			return RegisterInfo(NEC_SYSREG_ASID, 0, 4);
+		case NEC_SYSREG_MEI:
+			return RegisterInfo(NEC_SYSREG_MEI, 0, 4);
 		default:
 			// LogError("%s(%d == \"%s\") invalid argument", __func__,
 			//   regId, powerpc_reg_to_str(regId));
@@ -2313,27 +2377,144 @@ public:
 			break;
 			case N850_HSW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Or(
+							4,
+							il.ShiftLeft(
+								4,
+								il.Register(
+									4,
+									insn->fields[0].value
+								),
+								il.Const(
+									4,
+									16
+								)
+							),
+							il.LogicalShiftRight(
+								4,
+								il.Register(
+									4,
+									insn->fields[0].value
+								),
+								il.Const(
+									4,
+									16
+								)
+							)
+						),
+						FLAG_WRITE_CYOVSZ
+					)
+				);
 			}
 			break;
 			case N850_HSH:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Register(
+							4,
+							insn->fields[0].value
+						),
+						FLAG_WRITE_CYOVSZ
+					)
+				);
 			}
 			break;
 			case N850_JARL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// TODO check
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Add(
+							4,
+							il.Register(
+								4,
+								NEC_REG_PC
+							),
+							il.Const(
+								4,
+								4
+							)
+						)
+						
+					)
+				);
+				il.AddInstruction(
+					il.Call(
+						il.ConstPointer(
+							4,
+							addr + insn->fields[0].value
+						)
+					)
+				);
 			}
 			break;
 			case N850_JARL2:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Add(
+							4,
+							il.Register(
+								4,
+								NEC_REG_PC
+							),
+							il.Const(
+								4,
+								6
+							)
+						)
+						
+					)
+				);
+				il.AddInstruction(
+					il.Call(
+						il.ConstPointer(
+							4,
+							addr + insn->fields[0].value
+						)
+					)
+				);
 			}
 			break;
 			case N850_JARL3:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Add(
+							4,
+							il.Register(
+								4,
+								NEC_REG_PC
+							),
+							il.Const(
+								4,
+								4
+							)
+						)
+						
+					)
+				);
+				il.AddInstruction(
+					il.Call(
+						il.Register(
+							4,
+							insn->fields[0].value
+						)
+					)
+				);
 			}
 			break;
 			case N850_JMP:
@@ -2348,32 +2529,174 @@ public:
 			break;
 			case N850_JMPI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Jump(
+						il.Add(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.Const(
+								4,
+								insn->fields[0].value
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_JR:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// TODO check
+				il.AddInstruction(
+					il.Jump(
+						il.Add(
+							4,
+							il.Const(
+								4,
+								addr
+							),
+							il.SignExtend(
+								4,
+								il.Const(
+									3,
+									insn->fields[0].value
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_JRL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Jump(
+						il.Add(
+							4,
+							il.Const(
+								4,
+								addr
+							),
+							il.Const(
+								4,
+								insn->fields[0].value
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_LDBL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.SignExtend(
+							4,
+							il.Load(
+								1,
+								il.Add(
+									4,
+									il.Register(
+										4,
+										insn->fields[1].value
+									),
+									il.SignExtend(
+										4,
+										il.Const(
+											3,
+											insn->fields[0].value
+										)
+									)
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_LDBUL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.ZeroExtend(
+							4,
+							il.Load(
+								1,
+								il.Add(
+									4,
+									il.Register(
+										4,
+										insn->fields[1].value
+									),
+									il.SignExtend(
+										4,
+										il.Const(
+											3,
+											insn->fields[0].value
+										)
+									)
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_LDDW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// TODO check 
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value + 1,
+						il.Load(
+								1,
+								il.Add(
+									4,
+									il.Register(
+										4,
+										insn->fields[1].value
+									),
+									il.SignExtend(
+										4,
+										il.Const(
+											3,
+											insn->fields[0].value
+										)
+									)
+								)
+							)
+					)
+				);
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.Load(
+								1,
+								il.Add(
+									4,
+									il.Register(
+										4,
+										insn->fields[1].value
+									),
+									il.SignExtend(
+										4,
+										il.Const(
+											3,
+											insn->fields[0].value + 4
+										)
+									)
+								)
+							)
+					)
+				);
 			}
 			break;
 			case N850_LDB:
@@ -2438,22 +2761,103 @@ public:
 			break;
 			case N850_LDH:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.SignExtend(
+							4,
+							il.Load(
+								2,
+								il.Add(
+									4,
+									il.Register(
+										4,
+										insn->fields[1].value
+									),
+									il.SignExtend(
+										4,
+										il.Const(
+											2,
+											insn->fields[0].value
+										)
+									)
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_LDHU:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.ZeroExtend(
+							4,
+							il.Load(
+								2,
+								il.Add(
+									4,
+									il.Register(
+										4,
+										insn->fields[1].value
+									),
+									il.SignExtend(
+										4,
+										il.Const(
+											2,
+											insn->fields[0].value
+										)
+									)
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_LDW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.Load(
+							4,
+							il.Add(
+								4,
+								il.Register(
+									4,
+									insn->fields[1].value
+								),
+								il.SignExtend(
+									4,
+									il.Const(
+										2,
+										insn->fields[0].value
+									)
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_LDSR:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Register(
+							4,
+							insn->fields[0].value
+						)
+					)
+				);
 			}
 			break;
 			case N850_MOV:
@@ -2503,12 +2907,54 @@ public:
 			break;
 			case N850_MOVEA:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.Add(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.SignExtend(
+								4,
+								il.Const(
+									2,
+									insn->fields[0].value
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_MOVHI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.Add(
+							4,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.ShiftLeft(
+								4,
+								il.Const(
+									2,
+									insn->fields[0].value
+								),
+								il.Const(
+									4,
+									16
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_MAXFS:
@@ -2568,22 +3014,95 @@ public:
 			break;
 			case N850_MUL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegisterSplit(
+						4,
+						insn->fields[2].value,
+						insn->fields[1].value,
+						il.Mult(
+							8,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.Register(
+								4,
+								insn->fields[0].value
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_MULI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegisterSplit(
+						4,
+						insn->fields[2].value,
+						insn->fields[1].value,
+						il.Mult(
+							8,
+							il.Register(
+								4,
+								insn->fields[1].value
+							),
+							il.SignExtend(
+								4,
+								il.Const(
+									2,
+									insn->fields[0].value
+								)
+								
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_MULH:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Mult(
+							4,
+							il.Register(
+								2,
+								insn->fields[1].value
+							),
+							il.Register(
+								2,
+								insn->fields[0].value
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_MULHIMM:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Mult(
+							4,
+							il.Register(
+								2,
+								insn->fields[1].value
+							),
+							il.SignExtend(
+								2,
+								il.Const(
+									2,
+									insn->fields[0].value
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_MULHI:
@@ -3149,17 +3668,89 @@ public:
 			break;
 			case N850_LDHL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.SignExtend(
+							4,
+							il.Load(
+								2,
+								il.Add(
+									4,
+									il.Register(
+										4,
+										insn->fields[1].value
+									),
+									il.SignExtend(
+										4,
+										il.Const(
+											3,
+											insn->fields[0].value
+										)
+									)
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_LDHUL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.ZeroExtend(
+							4,
+							il.Load(
+								2,
+								il.Add(
+									4,
+									il.Register(
+										4,
+										insn->fields[1].value
+									),
+									il.SignExtend(
+										4,
+										il.Const(
+											3,
+											insn->fields[0].value
+										)
+									)
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_LDWL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.Load(
+							4,
+							il.Add(
+								4,
+								il.Register(
+									4,
+									insn->fields[1].value
+								),
+								il.SignExtend(
+									4,
+									il.Const(
+										3,
+										insn->fields[0].value
+									)
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_STDL:
