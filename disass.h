@@ -140,6 +140,7 @@ enum insn_id {
     N850_RETI,
     N850_SAR,
     N850_SARI,
+    N850_SARR,
     N850_SASF,
     N850_SATADD,
     N850_SATADDI,
