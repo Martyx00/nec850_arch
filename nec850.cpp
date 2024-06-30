@@ -450,6 +450,13 @@ public:
 		return result;
 	}
 
+	ExprId get_reg(LowLevelILFunction &il, int reg_id, int size) {
+		if (reg_id == 0)
+			return il.Const(size, 0);
+		else
+			return il.Register(size, reg_id);
+	}
+
 	virtual BNRegisterInfo GetRegisterInfo(uint32_t regId) override
 	{
 		switch (regId)
@@ -609,6 +616,7 @@ public:
 			BNLowLevelILLabel *false_label = NULL;
 			LowLevelILLabel true_tag;
 			LowLevelILLabel false_tag;
+			LowLevelILLabel end_tag;
 			ExprId condition;
 			switch (insn->insn_id)
 			{
@@ -620,10 +628,7 @@ public:
 						insn->fields[1].value,
 						il.FloatAbs(
 							4,
-							il.Register(
-								4,
-								insn->fields[0].value
-							)
+							this->get_reg(il,insn->fields[0].value,4)
 						)
 					)
 				);
@@ -637,14 +642,8 @@ public:
 						insn->fields[1].value,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_CYOVSZ
 						)
 					)
@@ -659,10 +658,7 @@ public:
 						insn->fields[1].value,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.SignExtend(
 								4,
 								il.Const(
@@ -684,14 +680,8 @@ public:
 						insn->fields[2].value,
 						il.FloatAdd(
 							4,
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
-							il.Register(
-								4,
-								insn->fields[1].value
-							)
+							this->get_reg(il,insn->fields[0].value,4),
+							this->get_reg(il,insn->fields[1].value,4)
 						)
 					)
 				);
@@ -708,14 +698,8 @@ public:
 								4,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[2].value
-									),
-									il.Register(
-										4,
-										insn->fields[1].value
-									)
+									this->get_reg(il,insn->fields[2].value,4),
+									this->get_reg(il,insn->fields[1].value,4)
 								),
 								il.Const(
 									4,
@@ -786,14 +770,8 @@ public:
 									4,
 									il.Add(
 										4,
-										il.Register(
-											4,
-											insn->fields[2].value
-										),
-										il.Register(
-											4,
-											insn->fields[1].value
-										)
+										this->get_reg(il,insn->fields[2].value,4),
+										this->get_reg(il,insn->fields[1].value,4)
 									),
 									il.Const(
 										4,
@@ -805,6 +783,7 @@ public:
 								
 							)
 						);
+					il.AddInstruction(il.Goto(end_tag));
 					il.MarkLabel(false_tag);
 					il.AddInstruction(
 						il.SetRegister(
@@ -812,18 +791,13 @@ public:
 							insn->fields[3].value,
 							il.Add(
 								4,
-								il.Register(
-									4,
-									insn->fields[2].value
-								),
-								il.Register(
-									4,
-									insn->fields[1].value
-								),
+								this->get_reg(il,insn->fields[2].value,4),
+								this->get_reg(il,insn->fields[1].value,4),
 								FLAG_WRITE_CYOVSZ
 							)
 						)
 					);
+					il.MarkLabel(end_tag);
 
 				}
 				
@@ -837,10 +811,7 @@ public:
 						insn->fields[2].value,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.SignExtend(
 								4,
 								il.Const(
@@ -862,14 +833,8 @@ public:
 						insn->fields[1].value,
 						il.And(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_OVSZ
 						)
 					)
@@ -884,10 +849,7 @@ public:
 						insn->fields[2].value,
 						il.And(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.ZeroExtend(
 								4,
 								il.Const(
@@ -1360,7 +1322,7 @@ public:
 				}
 
 				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
-
+			
 				if (!false_label) {
 					il.MarkLabel(false_tag);
 				}
@@ -1387,7 +1349,6 @@ public:
 				}
 
 				il.AddInstruction(il.Jump(il.ConstPointer(4,(insn->fields[0].value + addr) & 0xFFFFFFFF)));
-
 				if (!false_label) {
 					il.MarkLabel(false_tag);
 				}
@@ -1435,10 +1396,7 @@ public:
 									4,
 									il.And(
 										4,
-										il.Register(
-											4,
-											insn->fields[0].value
-										),
+										this->get_reg(il,insn->fields[0].value,4),
 										il.Const(
 											4,
 											0xff
@@ -1453,10 +1411,7 @@ public:
 									4,
 									il.And(
 										4,
-										il.Register(
-											4,
-											insn->fields[0].value
-										),
+										this->get_reg(il,insn->fields[0].value,4),
 										il.Const(
 											4,
 											0xff00
@@ -1475,10 +1430,7 @@ public:
 									4,
 									il.And(
 										4,
-										il.Register(
-											4,
-											insn->fields[0].value
-										),
+										this->get_reg(il,insn->fields[0].value,4),
 										il.Const(
 											4,
 											0xff000000
@@ -1493,10 +1445,7 @@ public:
 									4,
 									il.And(
 										4,
-										il.Register(
-											4,
-											insn->fields[0].value
-										),
+										this->get_reg(il,insn->fields[0].value,4),
 										il.Const(
 											4,
 											0xff0000
@@ -1515,17 +1464,114 @@ public:
 			break;
 			case N850_BINS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// TODO check disassembly again
+				// 🚫001ac798  bins          r29, 0x10, 0x8, r8
+				// 🚫001ac798  bins          r29, 0x10, 0x7, r8
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[3].value,
+						il.Or(
+							4,
+							il.And(
+								4,
+								this->get_reg(il,insn->fields[3].value,4),
+								il.Const(
+									4,
+									((0xffffffff << (insn->fields[1].value + insn->fields[2].value)) & 0xffffffff | (0xffffffff >> (32 - insn->fields[1].value))) & 0xffffffff
+								)
+							),
+							il.And(
+								4,
+								this->get_reg(il,insn->fields[0].value,4),
+								il.Const(
+									4,
+									(0xffffffff >> (32 - insn->fields[2].value) << insn->fields[1].value) & 0xffffffff
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_BINS2:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// 🚫0012ab84  bins          r2, 0xf, 0x3, r1
+				// 🚫0012ab84  bins          r2, 0xf, 0x1, r1 - RAW
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[3].value,
+						il.Or(
+							4,
+							il.And(
+								4,
+								this->get_reg(il,insn->fields[3].value,4),
+								il.Const(
+									4,
+									//(0xffffffff << (insn->fields[1].value + insn->fields[2].value - 1)) & 0xffffffff | (0xffffffff >> (31 - insn->fields[1].value))
+									((0xffffffff << (insn->fields[1].value + insn->fields[2].value)) & 0xffffffff | (0xffffffff >> (32 - insn->fields[1].value))) & 0xffffffff
+								)
+							),
+							il.And(
+								4,
+								this->get_reg(il,insn->fields[0].value,4),
+								il.Const(
+									4,
+									//(0xffffffff >> (32 - insn->fields[2].value)) & 0xffffffff
+									(0xffffffff >> (32 - insn->fields[2].value) << insn->fields[1].value) & 0xffffffff
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_BINS3:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// 🚫0012a8b8  bins          r2, 0x0, 0x4, r1
+				// 🚫0012a8b8  bins          r2, 0x0, 0x3, r1 - RAW
+				/*
+					pos = 1
+					width = 2
+					msb = pos + width - 1
+					lsb = pos
+				*/
+				//LogInfo("BINS AT %x",addr); //  , 
+				// 00152dd2: 
+					//00152dd2  bins          r1, 0x2, 0x7, r2 - > RAW
+					//00152dd2  bins          r1, 0x2, 0x6, r2
+
+				// 008536ba:
+					//008536ba  bins          r23, 0x8, 0xf, r15 -> RAW
+					//008536ba  bins          r23, 0x8, 0x8, r15
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[3].value,
+						il.Or(
+							4,
+							il.And(
+								4,
+								this->get_reg(il,insn->fields[3].value,4),
+								il.Const(
+									4,
+									//(0xffffffff << (insn->fields[1].value + insn->fields[2].value - 1)) & 0xffffffff | (0xffffffff >> (31 - insn->fields[1].value))
+									((0xffffffff << (insn->fields[1].value + insn->fields[2].value)) & 0xffffffff | (0xffffffff >> (32 - insn->fields[1].value))) & 0xffffffff
+								)
+							),
+							il.And(
+								4,
+								this->get_reg(il,insn->fields[0].value,4),
+								il.Const(
+									4,
+									//(0xffffffff >> (32 - insn->fields[2].value)) & 0xffffffff
+									(0xffffffff >> (32 - insn->fields[2].value) << insn->fields[1].value) & 0xffffffff
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_BSW:
@@ -1542,10 +1588,7 @@ public:
 									4,
 									il.And(
 										4,
-										il.Register(
-											4,
-											insn->fields[0].value
-										),
+										this->get_reg(il,insn->fields[0].value,4),
 										il.Const(
 											4,
 											0xff
@@ -1560,10 +1603,7 @@ public:
 									4,
 									il.And(
 										4,
-										il.Register(
-											4,
-											insn->fields[0].value
-										),
+										this->get_reg(il,insn->fields[0].value,4),
 										il.Const(
 											4,
 											0xff00
@@ -1582,10 +1622,7 @@ public:
 									4,
 									il.And(
 										4,
-										il.Register(
-											4,
-											insn->fields[0].value
-										),
+										this->get_reg(il,insn->fields[0].value,4),
 										il.Const(
 											4,
 											0xff000000
@@ -1600,10 +1637,7 @@ public:
 									4,
 									il.And(
 										4,
-										il.Register(
-											4,
-											insn->fields[0].value
-										),
+										this->get_reg(il,insn->fields[0].value,4),
 										il.Const(
 											4,
 											0xff0000
@@ -1662,10 +1696,7 @@ public:
 						1,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[2].value
-							),
+							this->get_reg(il,insn->fields[2].value,4),
 							il.SignExtend(
 								4,
 								il.Const(
@@ -1680,10 +1711,7 @@ public:
 								1,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[2].value
-									),
+									this->get_reg(il,insn->fields[2].value,4),
 									il.SignExtend(
 										4,
 										il.Const(
@@ -1710,18 +1738,12 @@ public:
 				il.AddInstruction(
 					il.Store(
 						1,
-						il.Register(
-							4,
-							insn->fields[1].value
-						),
+						this->get_reg(il,insn->fields[1].value,4),
 						il.And(
 							1,
 							il.Load(
 								1,
-								il.Register(
-									4,
-									insn->fields[1].value
-								)
+								this->get_reg(il,insn->fields[1].value,4)
 							),
 							il.ShiftLeft(
 								1,
@@ -1729,10 +1751,7 @@ public:
 									1,
 									1
 								),
-								il.Register(
-									1,
-									insn->fields[0].value
-								)
+								this->get_reg(il,insn->fields[0].value,1)
 							),
 							FLAG_WRITE_Z
 						)
@@ -1747,10 +1766,7 @@ public:
 						il.SetRegister(
 							4,
 							insn->fields[3].value,
-							il.Register(
-								4,
-								insn->fields[1].value
-							)
+							this->get_reg(il,insn->fields[1].value,4)
 						)
 					);
 				} else {
@@ -1804,29 +1820,26 @@ public:
 					default:
 						break;
 					}
+					
 					il.AddInstruction(il.If(condition,true_tag,false_tag));
 					il.MarkLabel(true_tag);
 					il.AddInstruction(
 						il.SetRegister(
 							4,
 							insn->fields[3].value,
-							il.Register(
-								4,
-								insn->fields[1].value
-							)
+							this->get_reg(il,insn->fields[1].value,4)
 						)
 					);
+					il.AddInstruction(il.Goto(end_tag));
 					il.MarkLabel(false_tag);
 					il.AddInstruction(
 						il.SetRegister(
 							4,
 							insn->fields[3].value,
-							il.Register(
-								4,
-								insn->fields[2].value
-							)
+							this->get_reg(il,insn->fields[2].value,4)
 						)
 					);
+					il.MarkLabel(end_tag);
 				}
 				
 			}
@@ -1918,17 +1931,16 @@ public:
 							)
 						)
 					);
+					il.AddInstruction(il.Goto(end_tag));
 					il.MarkLabel(false_tag);
 					il.AddInstruction(
 						il.SetRegister(
 							4,
 							insn->fields[3].value,
-							il.Register(
-								4,
-								insn->fields[2].value
-							)
+							this->get_reg(il,insn->fields[2].value,4)
 						)
 					);
+					il.MarkLabel(end_tag);
 				}
 			}
 			break;
@@ -1937,14 +1949,8 @@ public:
 				il.AddInstruction(
 					il.Sub(
 						4,
-						il.Register(
-							4,
-							insn->fields[1].value
-						),
-						il.Register(
-							4,
-							insn->fields[0].value
-						),
+						this->get_reg(il,insn->fields[1].value,4),
+						this->get_reg(il,insn->fields[0].value,4),
 						FLAG_WRITE_CYOVSZ
 
 					)
@@ -1953,7 +1959,134 @@ public:
 			break;
 			case N850_CMPFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// TODO bit field specifications???
+				switch (insn->fields[0].value)
+				{
+				case 0: // F
+				case 8: // SF
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							NEC_SYSREG_FPSR,
+							il.Const(
+								4,
+								0
+							)
+						)
+					);
+					break;
+				case 2: // EQ
+				case 3: // UQE
+				case 10: // SEQ
+				case 11: // NGL
+					condition = il.FloatCompareEqual(
+						4,
+						this->get_reg(il,insn->fields[2].value,4),
+						this->get_reg(il,insn->fields[1].value,4)
+					);
+					
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+					il.MarkLabel(true_tag);
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							NEC_SYSREG_FPSR,
+							il.Const(
+								4,
+								1
+							)
+						)
+					);
+					il.AddInstruction(il.Goto(end_tag));
+					il.MarkLabel(false_tag);
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							NEC_SYSREG_FPSR,
+							il.Const(
+								4,
+								0
+							)
+						)
+					);
+					il.MarkLabel(end_tag);
+					break;
+				case 4: // OLT
+				case 5: // ULT
+				case 12: // LT
+				case 13: // NGE
+					condition = il.FloatCompareLessThan(
+						4,
+						this->get_reg(il,insn->fields[2].value,4),
+						this->get_reg(il,insn->fields[1].value,4)
+					);
+					
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+					il.MarkLabel(true_tag);
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							NEC_SYSREG_FPSR,
+							il.Const(
+								4,
+								1
+							)
+						)
+					);
+					il.AddInstruction(il.Goto(end_tag));
+					il.MarkLabel(false_tag);
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							NEC_SYSREG_FPSR,
+							il.Const(
+								4,
+								0
+							)
+						)
+					);
+					il.MarkLabel(end_tag);
+					break;
+				case 6: // OLE
+				case 7: // ULE
+				case 14: // LE
+				case 15: // NGT
+					condition = il.FloatCompareLessEqual(
+						4,
+						this->get_reg(il,insn->fields[2].value,4),
+						this->get_reg(il,insn->fields[1].value,4)
+					);
+					
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+					il.MarkLabel(true_tag);
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							NEC_SYSREG_FPSR,
+							il.Const(
+								4,
+								1
+							)
+						)
+					);
+					il.AddInstruction(il.Goto(end_tag));
+					il.MarkLabel(false_tag);
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							NEC_SYSREG_FPSR,
+							il.Const(
+								4,
+								0
+							)
+						)
+					);
+					il.MarkLabel(end_tag);
+					break;
+				default:
+					il.AddInstruction(il.Unimplemented());
+					break;
+				}
 			}
 			break;
 			case N850_CMPI:
@@ -1961,10 +2094,7 @@ public:
 				il.AddInstruction(
 					il.Sub(
 						4,
-						il.Register(
-							4,
-							insn->fields[1].value
-						),
+						this->get_reg(il,insn->fields[1].value,4),
 						il.SignExtend(
 							4,
 							il.Const(
@@ -2010,12 +2140,30 @@ public:
 			break;
 			case N850_CVTFSUW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.FloatConvert(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_CVTFSW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.FloatConvert(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_CVTFULS:
@@ -2025,12 +2173,30 @@ public:
 			break;
 			case N850_CVTFUWS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.FloatConvert(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_CVTFWS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.FloatConvert(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_DBRET:
@@ -2045,6 +2211,7 @@ public:
 			break;
 			case N850_DI:
 			{
+				// Intrinsics candidate
 				il.AddInstruction(il.Unimplemented());
 			}
 			break;
@@ -2066,14 +2233,8 @@ public:
 						insn->fields[1].value,
 						il.DivSigned(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_OVSZ
 						)
 					)
@@ -2084,14 +2245,8 @@ public:
 						insn->fields[2].value,
 						il.ModSigned(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_OVSZ
 						)
 					)
@@ -2100,7 +2255,17 @@ public:
 			break;
 			case N850_DIVFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.FloatDiv(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_DIVH:
@@ -2111,16 +2276,10 @@ public:
 						insn->fields[1].value,
 						il.DivSigned(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.SignExtend(
 								4,
-								il.Register(
-									2,
-									insn->fields[0].value
-								)
+								this->get_reg(il,insn->fields[0].value,2)
 							),
 							FLAG_WRITE_OVSZ
 						)
@@ -2136,16 +2295,10 @@ public:
 						insn->fields[1].value,
 						il.DivSigned(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.SignExtend(
 								4,
-								il.Register(
-									2,
-									insn->fields[0].value
-								)
+								this->get_reg(il,insn->fields[0].value,2)
 							),
 							FLAG_WRITE_OVSZ
 						)
@@ -2157,16 +2310,10 @@ public:
 						insn->fields[2].value,
 						il.ModSigned(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.SignExtend(
 								4,
-								il.Register(
-									2,
-									insn->fields[0].value
-								)
+								this->get_reg(il,insn->fields[0].value,2)
 							),
 							FLAG_WRITE_OVSZ
 						)
@@ -2182,16 +2329,10 @@ public:
 						insn->fields[1].value,
 						il.DivUnsigned(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.ZeroExtend(
 								4,
-								il.Register(
-									2,
-									insn->fields[0].value
-								)
+								this->get_reg(il,insn->fields[0].value,2)
 							),
 							FLAG_WRITE_OVSZ
 						)
@@ -2203,16 +2344,10 @@ public:
 						insn->fields[2].value,
 						il.ModUnsigned(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.ZeroExtend(
 								4,
-								il.Register(
-									2,
-									insn->fields[0].value
-								)
+								this->get_reg(il,insn->fields[0].value,2)
 							),
 							FLAG_WRITE_OVSZ
 						)
@@ -2228,14 +2363,8 @@ public:
 						insn->fields[1].value,
 						il.DivSigned(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_OVSZ
 						)
 					)
@@ -2246,14 +2375,8 @@ public:
 						insn->fields[2].value,
 						il.ModSigned(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_OVSZ
 						)
 					)
@@ -2268,14 +2391,8 @@ public:
 						insn->fields[1].value,
 						il.DivUnsigned(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_OVSZ
 						)
 					)
@@ -2286,14 +2403,8 @@ public:
 						insn->fields[2].value,
 						il.ModUnsigned(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_OVSZ
 						)
 					)
@@ -2308,14 +2419,8 @@ public:
 						insn->fields[1].value,
 						il.DivUnsigned(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_OVSZ
 						)
 					)
@@ -2326,14 +2431,8 @@ public:
 						insn->fields[2].value,
 						il.ModUnsigned(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_OVSZ
 						)
 					)
@@ -2382,12 +2481,40 @@ public:
 			break;
 			case N850_FMAFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.FloatAdd(
+							4,
+							il.FloatMult(
+								4,
+								this->get_reg(il,insn->fields[1].value,4),
+								this->get_reg(il,insn->fields[0].value,4)
+							),
+							this->get_reg(il,insn->fields[2].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_FMSFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.FloatSub(
+							4,
+							il.FloatMult(
+								4,
+								this->get_reg(il,insn->fields[1].value,4),
+								this->get_reg(il,insn->fields[0].value,4)
+							),
+							this->get_reg(il,insn->fields[2].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_FNMAFS:
@@ -2415,10 +2542,7 @@ public:
 							4,
 							il.ShiftLeft(
 								4,
-								il.Register(
-									4,
-									insn->fields[0].value
-								),
+								this->get_reg(il,insn->fields[0].value,4),
 								il.Const(
 									4,
 									16
@@ -2426,10 +2550,7 @@ public:
 							),
 							il.LogicalShiftRight(
 								4,
-								il.Register(
-									4,
-									insn->fields[0].value
-								),
+								this->get_reg(il,insn->fields[0].value,4),
 								il.Const(
 									4,
 									16
@@ -2447,10 +2568,7 @@ public:
 					il.SetRegister(
 						4,
 						insn->fields[1].value,
-						il.Register(
-							4,
-							insn->fields[0].value
-						),
+						this->get_reg(il,insn->fields[0].value,4),
 						FLAG_WRITE_CYOVSZ
 					)
 				);
@@ -2465,10 +2583,7 @@ public:
 						insn->fields[1].value,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								NEC_REG_PC
-							),
+							this->get_reg(il,NEC_REG_PC,4),
 							il.Const(
 								4,
 								4
@@ -2495,10 +2610,7 @@ public:
 						insn->fields[1].value,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								NEC_REG_PC
-							),
+							this->get_reg(il,NEC_REG_PC,4),
 							il.Const(
 								4,
 								6
@@ -2525,10 +2637,7 @@ public:
 						insn->fields[1].value,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								NEC_REG_PC
-							),
+							this->get_reg(il,NEC_REG_PC,4),
 							il.Const(
 								4,
 								4
@@ -2539,10 +2648,7 @@ public:
 				);
 				il.AddInstruction(
 					il.Call(
-						il.Register(
-							4,
-							insn->fields[0].value
-						)
+						this->get_reg(il,insn->fields[0].value,4)
 					)
 				);
 			}
@@ -2563,10 +2669,7 @@ public:
 					il.Jump(
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.Const(
 								4,
 								insn->fields[0].value
@@ -2630,10 +2733,7 @@ public:
 								1,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.SignExtend(
 										4,
 										il.Const(
@@ -2660,10 +2760,7 @@ public:
 								1,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.SignExtend(
 										4,
 										il.Const(
@@ -2689,10 +2786,7 @@ public:
 								1,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.SignExtend(
 										4,
 										il.Const(
@@ -2712,10 +2806,7 @@ public:
 								1,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.SignExtend(
 										4,
 										il.Const(
@@ -2741,10 +2832,7 @@ public:
 								1,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.SignExtend(
 										4,
 										il.Const(
@@ -2771,10 +2859,7 @@ public:
 								1,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.SignExtend(
 										4,
 										il.Const(
@@ -2801,10 +2886,7 @@ public:
 								2,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.SignExtend(
 										4,
 										il.Const(
@@ -2831,10 +2913,7 @@ public:
 								2,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.SignExtend(
 										4,
 										il.Const(
@@ -2859,10 +2938,7 @@ public:
 							4,
 							il.Add(
 								4,
-								il.Register(
-									4,
-									insn->fields[1].value
-								),
+								this->get_reg(il,insn->fields[1].value,4),
 								il.SignExtend(
 									4,
 									il.Const(
@@ -2882,10 +2958,7 @@ public:
 					il.SetRegister(
 						4,
 						insn->fields[1].value,
-						il.Register(
-							4,
-							insn->fields[0].value
-						)
+						this->get_reg(il,insn->fields[0].value,4)
 					)
 				);
 			}
@@ -2896,10 +2969,7 @@ public:
 					il.SetRegister(
 						4,
 						insn->fields[1].value,
-						il.Register(
-							4,
-							insn->fields[0].value
-						)
+						this->get_reg(il,insn->fields[0].value,4)
 					)
 				);
 			}
@@ -2937,16 +3007,15 @@ public:
 			break;
 			case N850_MOVEA:
 			{
+				// 002106a2
+				
 				il.AddInstruction(
 					il.SetRegister(
 						4,
 						insn->fields[2].value,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.SignExtend(
 								4,
 								il.Const(
@@ -2957,6 +3026,7 @@ public:
 						)
 					)
 				);
+				
 			}
 			break;
 			case N850_MOVHI:
@@ -2967,10 +3037,7 @@ public:
 						insn->fields[2].value,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.ShiftLeft(
 								4,
 								il.Const(
@@ -2989,22 +3056,88 @@ public:
 			break;
 			case N850_MAXFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				condition = il.FloatCompareGreaterThan(
+					4,
+
+					this->get_reg(il,insn->fields[0].value,4),
+					this->get_reg(il,insn->fields[1].value,4)
+				);
+				il.AddInstruction(il.If(condition,true_tag,false_tag));
+				il.MarkLabel(true_tag);
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						this->get_reg(il,insn->fields[0].value,4)
+					)
+				);
+				il.AddInstruction(il.Goto(end_tag));
+				il.MarkLabel(false_tag);
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						this->get_reg(il,insn->fields[1].value,4)
+					)
+				);
+				il.MarkLabel(end_tag);
 			}
 			break;
 			case N850_MINFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				condition = il.FloatCompareLessThan(
+					4,
+					this->get_reg(il,insn->fields[0].value,4),
+					this->get_reg(il,insn->fields[1].value,4)
+				);
+				il.AddInstruction(il.If(condition,true_tag,false_tag));
+				il.MarkLabel(true_tag);
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						this->get_reg(il,insn->fields[0].value,4)
+					)
+				);
+				il.AddInstruction(il.Goto(end_tag));
+				il.MarkLabel(false_tag);
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						this->get_reg(il,insn->fields[1].value,4)
+					)
+				);
+				il.MarkLabel(end_tag);
 			}
 			break;
 			case N850_MULFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.FloatMult(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_NEGFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.FloatNeg(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_RECIPFS:
@@ -3051,14 +3184,8 @@ public:
 						insn->fields[1].value,
 						il.Mult(
 							8,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							)
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4)
 						)
 					)
 				);
@@ -3073,10 +3200,7 @@ public:
 						insn->fields[1].value,
 						il.Mult(
 							8,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.SignExtend(
 								4,
 								il.Const(
@@ -3098,14 +3222,8 @@ public:
 						insn->fields[1].value,
 						il.Mult(
 							4,
-							il.Register(
-								2,
-								insn->fields[1].value
-							),
-							il.Register(
-								2,
-								insn->fields[0].value
-							)
+							this->get_reg(il,insn->fields[1].value,2),
+							this->get_reg(il,insn->fields[0].value,2)
 						)
 					)
 				);
@@ -3119,10 +3237,7 @@ public:
 						insn->fields[1].value,
 						il.Mult(
 							4,
-							il.Register(
-								2,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,2),
 							il.SignExtend(
 								2,
 								il.Const(
@@ -3143,10 +3258,7 @@ public:
 						insn->fields[2].value,
 						il.Mult(
 							4,
-							il.Register(
-								2,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,2),
 							il.Const(
 								2,
 								insn->fields[0].value
@@ -3165,14 +3277,8 @@ public:
 						insn->fields[1].value,
 						il.Mult(
 							8,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							)
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4)
 						)
 					)
 				);
@@ -3187,10 +3293,7 @@ public:
 						insn->fields[1].value,
 						il.Mult(
 							8,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.ZeroExtend(
 								4,
 								il.Const(
@@ -3217,10 +3320,7 @@ public:
 						insn->fields[1].value,
 						il.Not(
 							4,
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_OVSZ
 						)
 					)
@@ -3234,10 +3334,7 @@ public:
 						1,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[2].value
-							),
+							this->get_reg(il,insn->fields[2].value,4),
 							il.SignExtend(
 								4,
 								il.Const(
@@ -3252,10 +3349,7 @@ public:
 								1,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[2].value
-									),
+									this->get_reg(il,insn->fields[2].value,4),
 									il.SignExtend(
 										4,
 										il.Const(
@@ -3280,18 +3374,12 @@ public:
 				il.AddInstruction(
 					il.Store(
 						1,
-						il.Register(
-							4,
-							insn->fields[1].value
-						),
+						this->get_reg(il,insn->fields[1].value,4),
 						il.Xor(
 							1,
 							il.Load(
 								1,
-								il.Register(
-									4,
-									insn->fields[1].value
-								)
+								this->get_reg(il,insn->fields[1].value,4)
 							),
 							il.ShiftLeft(
 								1,
@@ -3299,10 +3387,7 @@ public:
 									1,
 									1
 								),
-								il.Register(
-									1,
-									insn->fields[0].value
-								)
+								this->get_reg(il,insn->fields[0].value,1)
 							),
 							FLAG_WRITE_Z
 						)
@@ -3318,14 +3403,8 @@ public:
 						insn->fields[1].value,
 						il.Or(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_OVSZ
 						)
 					)
@@ -3340,10 +3419,7 @@ public:
 						insn->fields[2].value,
 						il.Or(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.ZeroExtend(
 								4,
 								il.Const(
@@ -3375,14 +3451,8 @@ public:
 						insn->fields[1].value,
 						il.ArithShiftRight(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_CYOVSZ
 						)
 					)
@@ -3397,10 +3467,7 @@ public:
 						insn->fields[1].value,
 						il.ArithShiftRight(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.ZeroExtend(
 								4,
 								il.Const(
@@ -3423,14 +3490,8 @@ public:
 						insn->fields[2].value,
 						il.ArithShiftRight(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_CYOVSZ
 						)
 					)
@@ -3448,10 +3509,7 @@ public:
 								4,
 								il.ShiftLeft(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.Const(
 										4,
 										1
@@ -3525,10 +3583,7 @@ public:
 								4,
 								il.ShiftLeft(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.Const(
 										4,
 										1
@@ -3541,6 +3596,7 @@ public:
 							)
 						)
 					);
+					il.AddInstruction(il.Goto(end_tag));
 					il.MarkLabel(false_tag);
 					il.AddInstruction(
 						il.SetRegister(
@@ -3548,10 +3604,7 @@ public:
 							insn->fields[1].value,
 							il.ShiftLeft(
 								4,
-								il.Register(
-									4,
-									insn->fields[1].value
-								),
+								this->get_reg(il,insn->fields[1].value,4),
 								il.Const(
 									4,
 									1
@@ -3559,6 +3612,7 @@ public:
 							)
 						)
 					);
+					il.MarkLabel(end_tag);
 				}
 				
 			}
@@ -3595,10 +3649,7 @@ public:
 						1,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[2].value
-							),
+							this->get_reg(il,insn->fields[2].value,4),
 							il.SignExtend(
 								4,
 								il.Const(
@@ -3613,10 +3664,7 @@ public:
 								1,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[2].value
-									),
+									this->get_reg(il,insn->fields[2].value,4),
 									il.SignExtend(
 										4,
 										il.Const(
@@ -3641,18 +3689,12 @@ public:
 				il.AddInstruction(
 					il.Store(
 						1,
-						il.Register(
-							4,
-							insn->fields[1].value
-						),
+						this->get_reg(il,insn->fields[1].value,4),
 						il.Or(
 							1,
 							il.Load(
 								1,
-								il.Register(
-									4,
-									insn->fields[1].value
-								)
+								this->get_reg(il,insn->fields[1].value,4)
 							),
 							il.ShiftLeft(
 								1,
@@ -3660,10 +3702,7 @@ public:
 									1,
 									1
 								),
-								il.Register(
-									1,
-									insn->fields[0].value
-								)
+								this->get_reg(il,insn->fields[0].value,4)
 							),
 							FLAG_WRITE_Z
 						)
@@ -3747,6 +3786,7 @@ public:
 							)
 						)
 					);
+					il.AddInstruction(il.Goto(end_tag));
 					il.MarkLabel(false_tag);
 					il.AddInstruction(
 						il.SetRegister(
@@ -3758,6 +3798,7 @@ public:
 							)
 						)
 					);
+					il.MarkLabel(end_tag);
 				}
 			}
 			break;
@@ -3769,14 +3810,8 @@ public:
 						insn->fields[1].value,
 						il.ShiftLeft(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_CYOVSZ
 						)
 					)
@@ -3791,10 +3826,7 @@ public:
 						insn->fields[1].value,
 						il.ShiftLeft(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.ZeroExtend(
 								4,
 								il.Const(
@@ -3803,6 +3835,20 @@ public:
 								)
 							),
 							FLAG_WRITE_CYOVSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_CY,
+						il.And(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							il.Const(
+								4,
+								(0x80000000 >> (insn->fields[0].value - 1))
+							)
+							
 						)
 					)
 				);
@@ -3816,14 +3862,8 @@ public:
 						insn->fields[1].value,
 						il.LogicalShiftRight(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_CYOVSZ
 						)
 					)
@@ -3838,10 +3878,7 @@ public:
 						insn->fields[1].value,
 						il.ShiftLeft(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
 							il.ZeroExtend(
 								4,
 								il.Const(
@@ -3850,6 +3887,20 @@ public:
 								)
 							),
 							FLAG_WRITE_CYOVSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_CY,
+						il.And(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							il.Const(
+								4,
+								(1 << (insn->fields[0].value - 1))
+							)
+							
 						)
 					)
 				);
@@ -3867,10 +3918,7 @@ public:
 								1,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.ZeroExtend(
 										4,
 										il.Const(
@@ -3897,10 +3945,7 @@ public:
 								1,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.ZeroExtend(
 										4,
 										il.Const(
@@ -3927,10 +3972,7 @@ public:
 								2,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.ZeroExtend(
 										4,
 										il.Const(
@@ -3957,10 +3999,7 @@ public:
 								2,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.ZeroExtend(
 										4,
 										il.Const(
@@ -3985,10 +4024,7 @@ public:
 							4,
 							il.Add(
 								4,
-								il.Register(
-									4,
-									insn->fields[1].value
-								),
+								this->get_reg(il,insn->fields[1].value,4),
 								il.ZeroExtend(
 									4,
 									il.Const(
@@ -4009,10 +4045,7 @@ public:
 						1,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[2].value
-							),
+							this->get_reg(il,insn->fields[2].value,4),
 							il.ZeroExtend(
 								4,
 								il.Const(
@@ -4021,10 +4054,7 @@ public:
 								)
 							)
 						),
-						il.Register(
-							1,
-							insn->fields[0].value
-						)
+						this->get_reg(il,insn->fields[0].value,4)
 					)
 				);
 			}
@@ -4036,10 +4066,7 @@ public:
 						2,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[2].value
-							),
+							this->get_reg(il,insn->fields[2].value,4),
 							il.ZeroExtend(
 								4,
 								il.Const(
@@ -4048,10 +4075,7 @@ public:
 								)
 							)
 						),
-						il.Register(
-							2,
-							insn->fields[0].value
-						)
+						this->get_reg(il,insn->fields[0].value,4)
 					)
 				);
 			}
@@ -4063,10 +4087,7 @@ public:
 						4,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[2].value
-							),
+							this->get_reg(il,insn->fields[2].value,4),
 							il.ZeroExtend(
 								4,
 								il.Const(
@@ -4075,10 +4096,7 @@ public:
 								)
 							)
 						),
-						il.Register(
-							4,
-							insn->fields[0].value
-						)
+						this->get_reg(il,insn->fields[0].value,4)
 					)
 				);
 			}
@@ -4090,10 +4108,7 @@ public:
 						1,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[2].value
-							),
+							this->get_reg(il,insn->fields[2].value,4),
 							il.SignExtend(
 								4,
 								il.Const(
@@ -4102,10 +4117,7 @@ public:
 								)
 							)
 						),
-						il.Register(
-							1,
-							insn->fields[0].value
-						)
+						this->get_reg(il,insn->fields[0].value,4)
 					)
 				);
 			}
@@ -4117,10 +4129,7 @@ public:
 						2,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[2].value
-							),
+							this->get_reg(il,insn->fields[2].value,4),
 							il.SignExtend(
 								4,
 								il.Const(
@@ -4129,10 +4138,7 @@ public:
 								)
 							)
 						),
-						il.Register(
-							2,
-							insn->fields[0].value
-						)
+						this->get_reg(il,insn->fields[0].value,4)
 					)
 				);
 			}
@@ -4144,10 +4150,7 @@ public:
 						4,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[2].value
-							),
+							this->get_reg(il,insn->fields[2].value,4),
 							il.SignExtend(
 								4,
 								il.Const(
@@ -4156,32 +4159,23 @@ public:
 								)
 							)
 						),
-						il.Register(
-							4,
-							insn->fields[0].value
-						)
+						this->get_reg(il,insn->fields[0].value,4)
 					)
 				);
 			}
 			break;
 			case N850_STSR:
 			{
+				if (addr == 0x16740a)
+					LogInfo("STSR");
 				// TODO test disass
 				il.AddInstruction(
 					il.SetRegister(
 						4,
 						insn->fields[1].value,
-						il.Register(
-							4,
-							insn->fields[0].value
-						)
+						this->get_reg(il,insn->fields[0].value,4)
 					)
 				);
-			}
-			break;
-			case N850_STSRI:
-			{
-				il.AddInstruction(il.Unimplemented());
 			}
 			break;
 			case N850_SUB:
@@ -4192,14 +4186,8 @@ public:
 						insn->fields[1].value,
 						il.Sub(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_CYOVSZ
 						)
 					)
@@ -4214,14 +4202,8 @@ public:
 						insn->fields[1].value,
 						il.Sub(
 							4,
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
+							this->get_reg(il,insn->fields[0].value,4),
+							this->get_reg(il,insn->fields[1].value,4),
 							FLAG_WRITE_CYOVSZ
 						)
 					)
@@ -4252,10 +4234,7 @@ public:
 											),
 											il.ShiftLeft(
 												4,
-												il.Register(
-													4,
-													insn->fields[0].value
-												),
+												this->get_reg(il,insn->fields[0].value,4),
 												il.Const(
 													4,
 													1
@@ -4282,10 +4261,7 @@ public:
 						insn->fields[0].value,
 						il.SignExtend(
 							4,
-							il.Register(
-								1,
-								insn->fields[0].value
-							)
+							this->get_reg(il,insn->fields[0].value,1)
 						)
 					)
 				);
@@ -4299,10 +4275,7 @@ public:
 						insn->fields[0].value,
 						il.SignExtend(
 							4,
-							il.Register(
-								2,
-								insn->fields[0].value
-							)
+							this->get_reg(il,insn->fields[0].value,2)
 						)
 					)
 				);
@@ -4340,27 +4313,95 @@ public:
 			break;
 			case N850_TST:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.And(
+						4,
+						this->get_reg(il,insn->fields[1].value,4),
+						this->get_reg(il,insn->fields[0].value,4),
+						FLAG_WRITE_OVSZ
+					)
+				);
 			}
 			break;
 			case N850_TST1:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					
+					il.Add(
+						1,
+						il.Load(
+							1,
+							il.Add(
+								4,
+								this->get_reg(il,insn->fields[2].value,4),
+								il.SignExtend(
+									4,
+									il.Const(
+										2,
+										insn->fields[1].value
+									)
+								)
+							)
+						),
+						il.Const(
+							1,
+							(1 << insn->fields[0].value) & 0xff
+						),
+						FLAG_WRITE_Z
+					)
+					
+				);
 			}
 			break;
 			case N850_TST1R:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Or(
+						1,
+						il.Load(
+							1,
+							this->get_reg(il,insn->fields[1].value,4)
+						),
+						il.ShiftLeft(
+							1,
+							il.Const(
+								1,
+								1
+							),
+							this->get_reg(il,insn->fields[0].value,1)
+						),
+						FLAG_WRITE_Z
+					)
+				);
 			}
 			break;
 			case N850_SUBFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.FloatSub(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4)
+
+						)
+					)
+				);
 			}
 			break;
 			case N850_TRFSR:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_Z,
+						il.Register(
+							4,
+							NEC_SYSREG_FPSR
+						)
+					)
+				);
 			}
 			break;
 			case N850_TRNCFSL:
@@ -4385,12 +4426,40 @@ public:
 			break;
 			case N850_XOR:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Xor(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
 			}
 			break;
 			case N850_XORI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.Xor(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							il.ZeroExtend(
+								4,
+								il.Const(
+									2,
+									insn->fields[0].value
+								)
+							),
+							FLAG_WRITE_OVSZ
+						)
+					)
+				);
 			}
 			break;
 			case N850_ZXB:
@@ -4401,10 +4470,7 @@ public:
 						insn->fields[0].value,
 						il.ZeroExtend(
 							4,
-							il.Register(
-								1,
-								insn->fields[0].value
-							)
+							this->get_reg(il,insn->fields[0].value,1)
 						)
 					)
 				);
@@ -4418,10 +4484,7 @@ public:
 						insn->fields[0].value,
 						il.ZeroExtend(
 							4,
-							il.Register(
-								2,
-								insn->fields[0].value
-							)
+							this->get_reg(il,insn->fields[0].value,2)
 						)
 					)
 				);
@@ -4434,27 +4497,122 @@ public:
 			break;
 			case N850_LOOP:
 			{
-				il.AddInstruction(il.Unimplemented());
+				
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[0].value,
+						il.Sub(
+							4,
+							this->get_reg(il,insn->fields[0].value,4),
+							il.Const(
+								4,
+								1
+							),
+							FLAG_WRITE_CYOVSZ
+						)
+					)
+				);
+				condition = il.CompareNotEqual(
+					4,
+					this->get_reg(il,insn->fields[0].value,4),
+					il.Const(
+						4,
+						0
+					)
+				);
+				il.AddInstruction(il.If(condition,true_tag,false_tag));
+				il.MarkLabel(true_tag);
+				il.AddInstruction(
+					il.Jump(
+						il.ConstPointer(
+							4,
+							addr - insn->fields[1].value
+						)
+					)
+				);
+				il.MarkLabel(false_tag);
+
 			}
 			break;
 			case N850_MAC:
+			// TODO register splits verify
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegisterSplit(
+						8,
+						insn->fields[3].value + 1,
+						insn->fields[3].value,
+						il.Add(
+							8,
+							il.Mult(
+								8,
+								this->get_reg(il,insn->fields[1].value,4),
+								this->get_reg(il,insn->fields[0].value,4)
+							),
+							il.RegisterSplit(
+								8,
+								insn->fields[2].value + 1,
+								insn->fields[2].value
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_MACU:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegisterSplit(
+						8,
+						insn->fields[3].value + 1,
+						insn->fields[3].value,
+						il.Add(
+							8,
+							il.Mult(
+								8,
+								this->get_reg(il,insn->fields[1].value,4),
+								this->get_reg(il,insn->fields[0].value,4)
+							),
+							il.RegisterSplit(
+								8,
+								insn->fields[2].value + 1,
+								insn->fields[2].value
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_POPSP:
+			// TODO check
 			{
-				il.AddInstruction(il.Unimplemented());
+				for (size_t i = insn->fields[1].value; i >= insn->fields[0].value; i--)
+				{
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							i,
+							il.Pop(
+								4
+							)
+						)
+					);
+				}
+				
 			}
 			break;
 			case N850_PUSHSP:
 			{
-				il.AddInstruction(il.Unimplemented());
+				for (size_t i = insn->fields[1].value; i >= insn->fields[0].value; i--)
+				{
+					il.AddInstruction(
+						il.Push(
+							4,
+							this->get_reg(il,i,4)
+						)
+					);
+				}
 			}
 			break;
 			case N850_RIEI:
@@ -4464,12 +4622,40 @@ public:
 			break;
 			case N850_ROTL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.RotateLeft(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
+							FLAG_WRITE_CYOVSZ
+						)
+					)
+				);
 			}
 			break;
 			case N850_ROTLI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.RotateLeft(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							il.ZeroExtend(
+								4,
+								il.Const(
+									1,
+									insn->fields[0].value
+								)
+							),
+							FLAG_WRITE_CYOVSZ
+						)
+					)
+				);
 			}
 			break;
 			case N850_SATADDR:
@@ -4484,26 +4670,137 @@ public:
 			break;
 			case N850_SBF:
 			{
-				il.AddInstruction(il.Unimplemented());
+				if (insn->fields[0].value == 5) {
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							insn->fields[3].value,
+							il.Sub(
+								4,
+								il.Sub(
+									4,
+									this->get_reg(il,insn->fields[2].value,4),
+									this->get_reg(il,insn->fields[1].value,4)
+								),
+								il.Const(
+									4,
+									1
+								),
+								FLAG_WRITE_CYOVSZ
+							)
+						)
+					);
+				} else {
+					switch (insn->fields[0].value)
+					{
+					case 2:
+						condition = il.FlagCondition(LLFC_E);
+						break;
+					case 10:
+						condition = il.FlagCondition(LLFC_NE);
+						break;
+					case 11:
+						condition = il.FlagCondition(LLFC_UGT);
+						break;
+					case 3:
+						condition = il.FlagCondition(LLFC_ULE);
+						break;
+					case 0:
+						condition = il.FlagCondition(LLFC_O);
+						break;
+					case 8:
+						condition = il.FlagCondition(LLFC_NO);
+						break;
+					case 1:
+						condition = il.FlagCondition(LLFC_ULT);
+						break;
+					case 9:
+						condition = il.FlagCondition(LLFC_UGE);
+						break;
+					case 6:
+						condition = il.FlagCondition(LLFC_SLT);
+						break;
+					case 14:
+						condition = il.FlagCondition(LLFC_SGE);
+						break;
+					case 7:
+						condition = il.FlagCondition(LLFC_SLE);
+						break;
+					case 15:
+						condition = il.FlagCondition(LLFC_SGT);
+						break;
+					case 4:
+						condition = il.FlagCondition(LLFC_NEG);
+						break;
+					case 12:
+						condition = il.FlagCondition(LLFC_POS);
+						break;
+					case 13:
+						condition = il.Unimplemented();
+						break;
+					default:
+						break;
+					}
+					il.AddInstruction(il.If(condition,true_tag,false_tag));
+					il.MarkLabel(true_tag);
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							insn->fields[3].value,
+							il.Sub(
+								4,
+								il.Sub(
+									4,
+									this->get_reg(il,insn->fields[2].value,4),
+									this->get_reg(il,insn->fields[1].value,4)
+								),
+								il.Const(
+									4,
+									1
+								),
+								FLAG_WRITE_CYOVSZ
+							)
+						)
+					);
+					il.AddInstruction(il.Goto(end_tag));
+					il.MarkLabel(false_tag);
+					il.AddInstruction(
+						il.SetRegister(
+							4,
+							insn->fields[3].value,
+							il.Sub(
+								4,
+								this->get_reg(il,insn->fields[2].value,4),
+								this->get_reg(il,insn->fields[1].value,4),
+								FLAG_WRITE_CYOVSZ
+							)
+						)
+					);
+					il.MarkLabel(end_tag);
+				}
 			}
 			break;
 			case N850_SCH0L:
 			{
+				// Count leading ones, candiadte for intrinsic
 				il.AddInstruction(il.Unimplemented());
 			}
 			break;
 			case N850_SCH0R:
 			{
+				// Count trailing ones, candiadte for intrinsic
 				il.AddInstruction(il.Unimplemented());
 			}
 			break;
 			case N850_SCH1L:
 			{
+				// Count leading zeros, candiadte for intrinsic
 				il.AddInstruction(il.Unimplemented());
 			}
 			break;
 			case N850_SCH1R:
 			{
+				// Count trailing zeros, candiadte for intrinsic
 				il.AddInstruction(il.Unimplemented());
 			}
 			break;
@@ -4515,14 +4812,8 @@ public:
 						insn->fields[2].value,
 						il.ShiftLeft(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_CYOVSZ
 						)
 					)
@@ -4537,14 +4828,8 @@ public:
 						insn->fields[2].value,
 						il.LogicalShiftRight(
 							4,
-							il.Register(
-								4,
-								insn->fields[1].value
-							),
-							il.Register(
-								4,
-								insn->fields[0].value
-							),
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
 							FLAG_WRITE_CYOVSZ
 						)
 					)
@@ -4573,10 +4858,7 @@ public:
 								2,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.SignExtend(
 										4,
 										il.Const(
@@ -4603,10 +4885,7 @@ public:
 								2,
 								il.Add(
 									4,
-									il.Register(
-										4,
-										insn->fields[1].value
-									),
+									this->get_reg(il,insn->fields[1].value,4),
 									il.SignExtend(
 										4,
 										il.Const(
@@ -4631,10 +4910,7 @@ public:
 							4,
 							il.Add(
 								4,
-								il.Register(
-									4,
-									insn->fields[1].value
-								),
+								this->get_reg(il,insn->fields[1].value,4),
 								il.SignExtend(
 									4,
 									il.Const(
@@ -4655,10 +4931,7 @@ public:
 						1,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[2].value
-							),
+							this->get_reg(il,insn->fields[2].value,4),
 							il.SignExtend(
 								4,
 								il.Const(
@@ -4667,17 +4940,34 @@ public:
 								)
 							)
 						),
-						il.Register(
-							1,
-							insn->fields[0].value
-						)
+						this->get_reg(il,insn->fields[0].value,1)
 					)
 				);
 			}
 			break;
 			case N850_STDW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Store(
+						8,
+						il.Add(
+							4,
+							this->get_reg(il,insn->fields[2].value,4),
+							il.SignExtend(
+								4,
+								il.Const(
+									3,
+									insn->fields[1].value
+								)
+							)
+						),
+						il.RegisterSplit(
+							8,
+							insn->fields[0].value + 1,
+							insn->fields[0].value
+						)
+					)
+				);
 			}
 			break;
 			case N850_STHL:
@@ -4687,10 +4977,7 @@ public:
 						2,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[2].value
-							),
+							this->get_reg(il,insn->fields[2].value,4),
 							il.SignExtend(
 								4,
 								il.Const(
@@ -4699,10 +4986,7 @@ public:
 								)
 							)
 						),
-						il.Register(
-							2,
-							insn->fields[0].value
-						)
+						this->get_reg(il,insn->fields[0].value,2)
 					)
 				);
 			}
@@ -4714,10 +4998,7 @@ public:
 						4,
 						il.Add(
 							4,
-							il.Register(
-								4,
-								insn->fields[2].value
-							),
+							this->get_reg(il,insn->fields[2].value,4),
 							il.SignExtend(
 								4,
 								il.Const(
@@ -4726,10 +5007,7 @@ public:
 								)
 							)
 						),
-						il.Register(
-							4,
-							insn->fields[0].value
-						)
+						this->get_reg(il,insn->fields[0].value,4)
 					)
 				);
 			}
@@ -4741,7 +5019,18 @@ public:
 			break;
 			case N850_SHRR:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.LogicalShiftRight(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
+							FLAG_WRITE_CYOVSZ
+						)
+					)
+				);
 			}
 			break;
 
