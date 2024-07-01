@@ -208,7 +208,7 @@ const disass_insn_t instruction_list[] = {
 //  { "name"  , enum         , size, mask      , static_mask  , n,   op_type    , cond   , {{field ,shr,shl,  +, size (in bits), sign, index, TYPE_REG}, ...}
     //{ "mov"   , N850_MOV   ,    2, 0x0000    , 2,   OP_TYPE_MOV, COND_NV, {{0xf800,  10,  0,  0, TYPE_REG}, {0x001f,  0,  0,  0, TYPE_REG}, {0}, {0}}},
     { "nop"   , N850_NOP ,    2, 0x0000    , 0x0000       , 0,   OP_TYPE_NOP, COND_NV, {{0}, {0}, {0}, {0}, {0}}},
-    { "switch"   , N850_SWITCH     ,    2, 0x005f    , 0x0040       , 1,   OP_TYPE_SUB, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}, {0}}},
+    { "switch"   , N850_SWITCH     ,    2, 0x005f    , 0x0040       , 1,   OP_TYPE_RJMP, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}, {0}}},
     { "sxb"   , N850_SXB     ,    2, 0x00bf    , 0x00A0       , 1,   OP_TYPE_MOV, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}, {0}}},
     { "sxh"   , N850_SXH     ,    2, 0x00ff    , 0x00E0       , 1,   OP_TYPE_MOV, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}, {0}}},
     { "synce"   , N850_SYNCE ,    2, 0x001D    , 0x001D       , 0,   OP_TYPE_MOV, COND_NV, {{0}, {0}, {0}, {0}, {0}}},
@@ -240,7 +240,7 @@ const disass_insn_t instruction_list[] = {
     { "bsa"   , N850_BSA     ,    2, 0xFDFD    , 0x058D       , 1,   OP_TYPE_CJMP, COND_SAT, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
     { "bv"   , N850_BV     ,    2, 0xFDF0    , 0x0580       , 1,   OP_TYPE_CJMP, COND_OF, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
     { "bz"   , N850_BZ     ,    2, 0xFDF2    , 0x0582       , 1,   OP_TYPE_CJMP, COND_ZERO, {{0x0070,  3,  0,  0, 4, SIGNED, 0, TYPE_JMP}, {0xf800,  7,  0,  0, 5, SIGNED, 0, TYPE_JMP}, {0}, {0}, {0}}},
-    /*UNTESTED*/{ "callt"   , N850_CALLT     ,    2, 0x23f    , 0x0200       , 1,   OP_TYPE_CALL, COND_NV, {{0x003f,  0,  1,  0, 6, UNSIGNED, 0, TYPE_JMP}, {0}, {0}, {0}, {0}}},
+    /*UNTESTED*/{ "callt"   , N850_CALLT     ,    2, 0x23f    , 0x0200       , 1,   OP_TYPE_MOV, COND_NV, {{0x003f,  0,  1,  0, 6, UNSIGNED, 0, TYPE_IMM}, {0}, {0}, {0}, {0}}},
     { "cmp"   , N850_CMP     ,    2, 0xF9FF    , 0x01E0       , 2,   OP_TYPE_CMP, COND_NV, {{0x001f,  0,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0xf800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
     { "cmp"   , N850_CMPI ,    2, 0xFA7F    , 0x0260       , 2,   OP_TYPE_CMP, COND_NV, {{0x001f,  0,  0,  0, 5, SIGNED, 0, TYPE_IMM}, {0xf800,  11,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
     /*UNTESTED*/{ "dbtrap"   , N850_DBTRAP ,    2, 0xF840    , 0xF840       , 0,   OP_TYPE_CMP, COND_NV, {{0}, {0}, {0}, {0}, {0}}},

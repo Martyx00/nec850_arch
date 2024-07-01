@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include <string.h>
 #include "disass.h"
+#include "binaryninjaapi.h"
+#include "binaryninjacore.h"
+#include "lowlevelilinstruction.h"
 
 using namespace BinaryNinja;
 using namespace std;
@@ -606,6 +609,128 @@ public:
 	{
 		return NEC_REG_LP;
 	}
+
+
+virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
+         switch (intrinsic)  {
+            case SCH1L_INTRINSIC:
+                return "_CountLeadingZeros";
+            case SCH1R_INTRINSIC:
+                return "_CountTrailingZeros";
+            case SCH0L_INTRINSIC:
+                return "_CountLeadingOnes";
+			case SCH0R_INTRINSIC:
+                return "_CountTrailingOnes";
+			case SYNC_MEMORY_ACCESS:
+                return "_SynchornizeMemoryAccess";
+			case SYNC_PIPELINE:
+                return "_SynchornizePipeline";
+			case SYNC_INSN_FETCHER:
+                return "_SynchornizeInstructionFetcher";
+			case SYNC_EXCEPTIONS:
+                return "_SynchornizeExceptions";
+			case DI_INTRINSIC:
+                return "_DisableEILevelMaskableInterrupt";
+			case EI_INTRINSIC:
+                return "_EnableEILevelMaskableException";
+			case HALT_INTRINSIC:
+                return "_HaltCPU";
+			case RIE_INTRINSIC:
+                return "_ReservedInstructionException";
+            default:
+                return "";
+            }
+    }
+
+    virtual std::vector<uint32_t> GetAllIntrinsics() override {
+        return vector<uint32_t> {
+            SCH1L_INTRINSIC,
+			SCH1R_INTRINSIC,
+			SCH0L_INTRINSIC,
+			SCH0R_INTRINSIC,
+			SYNC_MEMORY_ACCESS,
+			SYNC_PIPELINE,
+			SYNC_INSN_FETCHER,
+			SYNC_EXCEPTIONS,
+			DI_INTRINSIC,
+			EI_INTRINSIC,
+			HALT_INTRINSIC,
+			RIE_INTRINSIC
+        };
+    }
+
+    virtual std::vector<NameAndType> GetIntrinsicInputs (uint32_t intrinsic) override {
+        switch (intrinsic)
+            {
+                case SCH1L_INTRINSIC:
+                    return {
+                        NameAndType("WORD", Type::IntegerType(4, false))
+                    };
+                case SCH1R_INTRINSIC:
+                    return {
+                        NameAndType("WORD", Type::IntegerType(4, false))
+                    };
+                case SCH0L_INTRINSIC:
+                    return {
+                        NameAndType("WORD", Type::IntegerType(4, false))
+                    };
+				case SCH0R_INTRINSIC:
+                    return {
+                        NameAndType("WORD", Type::IntegerType(4, false))
+                    };
+				case SYNC_MEMORY_ACCESS:
+                    return {  };
+				case SYNC_PIPELINE:
+                    return {  };
+				case SYNC_INSN_FETCHER:
+                    return {  };
+				case SYNC_EXCEPTIONS:
+                    return {  };
+				case DI_INTRINSIC:
+                    return {  };
+				case EI_INTRINSIC:
+                    return {  };
+				case HALT_INTRINSIC:
+                    return {  };
+				case RIE_INTRINSIC:
+                    return {  };
+                default:
+                    return vector<NameAndType>();
+            }
+    }
+
+    virtual std::vector<Confidence<Ref<Type>>> GetIntrinsicOutputs (uint32_t intrinsic) override {
+        switch (intrinsic)
+            {
+                case SCH1L_INTRINSIC:
+                    return { Type::IntegerType(4, false) };
+                case SCH1R_INTRINSIC:
+                    return { Type::IntegerType(4, false) };
+				case SCH0L_INTRINSIC:
+                    return { Type::IntegerType(4, false) };
+				case SCH0R_INTRINSIC:
+                    return { Type::IntegerType(4, false) };
+				case SYNC_MEMORY_ACCESS:
+                    return { };
+				case SYNC_PIPELINE:
+                    return { };
+				case SYNC_INSN_FETCHER:
+                    return { };
+				case SYNC_EXCEPTIONS:
+                    return { };
+				case DI_INTRINSIC:
+                    return {  };
+				case EI_INTRINSIC:
+                    return {  };
+				case HALT_INTRINSIC:
+                    return {  };
+				case RIE_INTRINSIC:
+                    return {  };
+                default:
+                    return vector<Confidence<Ref<Type>>>();
+            }
+    }
+
 	virtual bool GetInstructionLowLevelIL(const uint8_t *data, uint64_t addr, size_t &len, LowLevelILFunction &il) override
 	{
 		insn_t *insn;
@@ -1656,7 +1781,27 @@ public:
 			break;
 			case N850_CALLT:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Call(
+						il.Load(
+							4,
+							il.Add(
+								4,
+								il.Register(
+									4,
+									NEC_SYSREG_CTBP
+								),
+								il.ZeroExtend(
+									4,
+									il.Const(
+										1,
+										insn->fields[0].value
+									)
+								)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_CAXI:
@@ -2206,13 +2351,23 @@ public:
 			break;
 			case N850_DBTRAP:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Trap(
+						insn->fields[0].value
+					)
+				);
 			}
 			break;
 			case N850_DI:
 			{
 				// Intrinsics candidate
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Intrinsic(
+						{ }, // Outputs
+						SYNC_EXCEPTIONS,
+						{ } // Inputs
+					)
+				);
 			}
 			break;
 			case N850_DISPOSE:
@@ -2441,22 +2596,54 @@ public:
 			break;
 			case N850_EI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Intrinsic(
+						{ }, // Outputs
+						EI_INTRINSIC,
+						{ } // Inputs
+					)
+				);
 			}
 			break;
 			case N850_EIRET:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						NEC_SYSREG_PSW,
+						il.Register(
+							4,
+							NEC_SYSREG_EIPSW
+						)
+					)
+				);
+				il.AddInstruction(il.Return(il.Register(4,NEC_SYSREG_EIPC)));
+
 			}
 			break;
 			case N850_FERET:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						NEC_SYSREG_PSW,
+						il.Register(
+							4,
+							NEC_SYSREG_FEPSW
+						)
+					)
+				);
+				il.AddInstruction(il.Return(il.Register(4,NEC_SYSREG_FEPC)));
+
 			}
 			break;
 			case N850_FETRAP:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Trap(
+						insn->fields[0].value
+					)
+				);
 			}
 			break;
 			case N850_FLOORFSL:
@@ -2529,7 +2716,13 @@ public:
 			break;
 			case N850_HALT:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Intrinsic(
+						{ }, // Outputs
+						SYNC_EXCEPTIONS,
+						{ } // Inputs
+					)
+				);
 			}
 			break;
 			case N850_HSW:
@@ -3619,27 +3812,95 @@ public:
 			break;
 			case N850_SATADD:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Add(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
+							FLAG_WRITE_ALL
+						)
+					)
+				);
 			}
 			break;
 			case N850_SATADDI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Add(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							il.SignExtend(
+								4,
+								il.Const(
+									1,
+									insn->fields[0].value
+								)
+							),
+							FLAG_WRITE_ALL
+						)
+					)
+				);
 			}
 			break;
 			case N850_SATSUB:
+			// TODO handle the saturation?
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Sub(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
+							FLAG_WRITE_ALL
+						)
+					)
+				);
 			}
 			break;
 			case N850_SATSUBI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.Sub(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							il.SignExtend(
+								4,
+								il.Const(
+									2,
+									insn->fields[0].value
+								)
+							),
+							FLAG_WRITE_ALL
+						)
+					)
+				);
 			}
 			break;
 			case N850_SATSUBR:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Sub(
+							4,
+							this->get_reg(il,insn->fields[0].value,4),
+							this->get_reg(il,insn->fields[1].value,4),
+							FLAG_WRITE_ALL
+						)
+					)
+				);
 			}
 			break;
 			case N850_SET1:
@@ -4251,6 +4512,7 @@ public:
 						)
 					)
 				);
+				il.MarkLabel(false_tag);
 			}
 			break;
 			case N850_SXB:
@@ -4283,22 +4545,46 @@ public:
 			break;
 			case N850_SYNCE:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Intrinsic(
+						{ }, // Outputs
+						SYNC_EXCEPTIONS,
+						{ } // Inputs
+					)
+				);
 			}
 			break;
 			case N850_SYNCI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Intrinsic(
+						{ }, // Outputs
+						SYNC_INSN_FETCHER,
+						{ } // Inputs
+					)
+				);
 			}
 			break;
 			case N850_SYNCM:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Intrinsic(
+						{ }, // Outputs
+						SYNC_MEMORY_ACCESS,
+						{ } // Inputs
+					)
+				);
 			}
 			break;
 			case N850_SYNCP:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Intrinsic(
+						{ }, // Outputs
+						SYNC_PIPELINE,
+						{ } // Inputs
+					)
+				);
 			}
 			break;
 			case N850_SYSCALL:
@@ -4308,7 +4594,11 @@ public:
 			break;
 			case N850_TRAP:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Trap(
+						insn->fields[0].value
+					)
+				);
 			}
 			break;
 			case N850_TST:
@@ -4406,22 +4696,60 @@ public:
 			break;
 			case N850_TRNCFSL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegisterSplit(
+						8,
+						insn->fields[1].value + 1,
+						insn->fields[1].value ,
+						il.FloatTrunc(
+							8,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_TRNCFSUL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegisterSplit(
+						8,
+						insn->fields[1].value + 1,
+						insn->fields[1].value ,
+						il.FloatTrunc(
+							8,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_TRNCFSUW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.FloatTrunc(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_TRNCFSW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.FloatTrunc(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_XOR:
@@ -4617,7 +4945,13 @@ public:
 			break;
 			case N850_RIEI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Intrinsic(
+						{ }, // Outputs
+						RIE_INTRINSIC,
+						{ } // Inputs
+					)
+				);
 			}
 			break;
 			case N850_ROTL:
@@ -4783,25 +5117,49 @@ public:
 			case N850_SCH0L:
 			{
 				// Count leading ones, candiadte for intrinsic
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Intrinsic(
+						{ RegisterOrFlag::Register(insn->fields[1].value) }, // Outputs
+						SCH0L_INTRINSIC,
+						{ il.Register(4, insn->fields[0].value) } // Inputs
+					)
+				);
 			}
 			break;
 			case N850_SCH0R:
 			{
 				// Count trailing ones, candiadte for intrinsic
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Intrinsic(
+						{ RegisterOrFlag::Register(insn->fields[1].value) }, // Outputs
+						SCH0R_INTRINSIC,
+						{ il.Register(4, insn->fields[0].value) } // Inputs
+					)
+				);
 			}
 			break;
 			case N850_SCH1L:
 			{
 				// Count leading zeros, candiadte for intrinsic
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Intrinsic(
+						{ RegisterOrFlag::Register(insn->fields[1].value) }, // Outputs
+						SCH1L_INTRINSIC,
+						{ il.Register(4, insn->fields[0].value) } // Inputs
+					)
+				);
 			}
 			break;
 			case N850_SCH1R:
 			{
 				// Count trailing zeros, candiadte for intrinsic
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Intrinsic(
+						{ RegisterOrFlag::Register(insn->fields[1].value) }, // Outputs
+						SCH1R_INTRINSIC,
+						{ il.Register(4, insn->fields[0].value) } // Inputs
+					)
+				);
 			}
 			break;
 			case N850_SHLL:
@@ -5014,7 +5372,13 @@ public:
 			break;
 			case N850_RIE:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Intrinsic(
+						{ }, // Outputs
+						RIE_INTRINSIC,
+						{ } // Inputs
+					)
+				);
 			}
 			break;
 			case N850_SHRR:
