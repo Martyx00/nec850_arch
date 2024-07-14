@@ -805,8 +805,8 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 						insn->fields[2].value,
 						il.FloatAdd(
 							4,
-							this->get_reg(il,insn->fields[0].value,4),
-							this->get_reg(il,insn->fields[1].value,4)
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4)
 						)
 					)
 				);
@@ -1806,31 +1806,125 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_CAXI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// TODO not checked
+				il.AddInstruction(
+					il.If(
+						il.CompareEqual(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							il.Load(
+								4,
+								this->get_reg(il,insn->fields[0].value,4)
+							)
+						),
+						true_tag,
+						false_tag
+					)
+				);
+				il.MarkLabel(true_tag);
+				il.AddInstruction(
+					il.Store(
+						4,
+						this->get_reg(il,insn->fields[0].value,4),
+						this->get_reg(il,insn->fields[2].value,4)
+					)
+				);
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.Load(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
+				il.MarkLabel(false_tag);
+				il.AddInstruction(
+					il.Store(
+						4,
+						this->get_reg(il,insn->fields[0].value,4),
+						il.Load(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.Load(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
+				il.MarkLabel(end_tag);
 			}
 			break;
 			case N850_CEILFSL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// TODO none of the CEILs are checked
+				il.AddInstruction(
+					il.SetRegisterSplit(
+						8,
+						insn->fields[1].value + 1,
+						insn->fields[1].value,
+						il.Ceil(
+							8,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_CEILFSUL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegisterSplit(
+						8,
+						insn->fields[1].value + 1,
+						insn->fields[1].value,
+						il.Ceil(
+							8,
+							this->get_reg(il,insn->fields[0].value,8)
+						)
+					)
+				);
 			}
 			break;
 			case N850_CEILFSUW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Ceil(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_CEILFSW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Ceil(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_CLL:
 			{
+				// TODO INTRINSIC CANDIDATE
 				il.AddInstruction(il.Unimplemented());
 			}
 			break;
@@ -2260,27 +2354,74 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_CVTFHS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.FloatConvert(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_CVTFLS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.FloatConvert(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_CVTFSL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegisterSplit(
+						8,
+						insn->fields[1].value + 1,
+						insn->fields[1].value,
+						il.FloatConvert(
+							8,
+							this->get_reg(il,insn->fields[0].value,8)
+						)
+					)
+				);
 			}
 			break;
 			case N850_CVTFSH:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.FloatConvert(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_CVTFSUL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegisterSplit(
+						4,
+						insn->fields[1].value + 1,
+						insn->fields[1].value,
+						il.FloatConvert(
+							4,
+							this->get_reg(il,insn->fields[0].value,8)
+						)
+					)
+				);
 			}
 			break;
 			case N850_CVTFSUW:
@@ -2313,7 +2454,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_CVTFULS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.FloatConvert(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_CVTFUWS:
@@ -2346,7 +2496,17 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_DBRET:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						NEC_SYSREG_PSW,
+						il.Register(
+							4,
+							NEC_SYSREG_DBPSW
+						)
+					)
+				);
+				il.AddInstruction(il.Return(NEC_SYSREG_DBPC));
 			}
 			break;
 			case N850_DBTRAP:
@@ -2648,22 +2808,60 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_FLOORFSL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegisterSplit(
+						8,
+						insn->fields[1].value + 1,
+						insn->fields[1].value,
+						il.Floor(
+							8,
+							this->get_reg(il,insn->fields[0].value,8)
+						)
+					)
+				);
 			}
 			break;
 			case N850_FLOORFSUL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegisterSplit(
+						8,
+						insn->fields[1].value + 1,
+						insn->fields[1].value,
+						il.Floor(
+							8,
+							this->get_reg(il,insn->fields[0].value,8)
+						)
+					)
+				);
 			}
 			break;
 			case N850_FLOORFSUW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Floor(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_FLOORFSW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Floor(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_FMAFS:
@@ -2706,12 +2904,46 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_FNMAFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.FloatNeg(
+							4,
+							il.FloatAdd(
+								4,
+								il.FloatMult(
+									4,
+									this->get_reg(il,insn->fields[1].value,4),
+									this->get_reg(il,insn->fields[0].value,4)
+								),
+								this->get_reg(il,insn->fields[2].value,4)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_FNMSFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.FloatNeg(
+							4,
+							il.FloatSub(
+								4,
+								il.FloatMult(
+									4,
+									this->get_reg(il,insn->fields[1].value,4),
+									this->get_reg(il,insn->fields[0].value,4)
+								),
+								this->get_reg(il,insn->fields[2].value,4)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_HALT:
@@ -3335,27 +3567,78 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_RECIPFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.FloatDiv(
+							4,
+							il.Const(
+								4,
+								1
+							),
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
-			case N850_EOUNDFSL:
+			case N850_ROUNDFSL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegisterSplit(
+						8,
+						insn->fields[1].value + 1,
+						insn->fields[1].value,
+						il.RoundToInt(
+							8,
+							this->get_reg(il,insn->fields[0].value,8)
+						)
+					)
+				);
 			}
 			break;
-			case N850_EOUNDFSUL:
+			case N850_ROUNDFSUL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegisterSplit(
+						8,
+						insn->fields[1].value + 1,
+						insn->fields[1].value,
+						il.RoundToInt(
+							8,
+							this->get_reg(il,insn->fields[0].value,8)
+						)
+					)
+				);
 			}
 			break;
 			case N850_ROUNDFSUW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.RoundToInt(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_ROUNDFSW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.RoundToInt(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_RSQRTFS:
@@ -3365,7 +3648,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_SQRTFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.FloatSqrt(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+					)
+				);
 			}
 			break;
 			case N850_MUL:
@@ -4473,6 +4765,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_SWITCH:
 			{
+				// TODO does not work
 				il.AddInstruction(
 					il.Jump(
 						il.Add(
@@ -4703,7 +4996,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 						insn->fields[1].value ,
 						il.FloatTrunc(
 							8,
-							this->get_reg(il,insn->fields[0].value,4)
+							this->get_reg(il,insn->fields[0].value,8)
 						)
 					)
 				);
@@ -4718,7 +5011,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 						insn->fields[1].value ,
 						il.FloatTrunc(
 							8,
-							this->get_reg(il,insn->fields[0].value,4)
+							this->get_reg(il,insn->fields[0].value,8)
 						)
 					)
 				);
