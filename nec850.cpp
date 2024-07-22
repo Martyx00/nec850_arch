@@ -265,6 +265,9 @@ public:
 	{
 		switch (writeType)
 		{
+		case FLAG_WRITE_SZ:
+			return vector<uint32_t>{
+				FLAG_Z, FLAG_S};
 		case FLAG_WRITE_OVSZ:
 			return vector<uint32_t>{
 				FLAG_Z, FLAG_S, FLAG_OV};
@@ -1839,6 +1842,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 						)
 					)
 				);
+				il.AddInstruction(il.Goto(end_tag));
 				il.MarkLabel(false_tag);
 				il.AddInstruction(
 					il.Store(
@@ -2085,7 +2089,30 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_CMOVFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				condition = il.CompareEqual(
+					1,
+					NEC_SYSREG_FPSR,
+					insn->fields[0].value
+				);
+				il.AddInstruction(il.If(condition,true_tag,false_tag));
+				il.MarkLabel(true_tag);
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[3].value,
+						this->get_reg(il,insn->fields[1].value,4)
+					)
+				);
+				il.AddInstruction(il.Goto(end_tag));
+				il.MarkLabel(false_tag);
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[3].value,
+						this->get_reg(il,insn->fields[2].value,4)
+					)
+				);
+				il.MarkLabel(end_tag);
 			}
 			break;
 			case N850_CMOVI:
@@ -3643,7 +3670,23 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_RSQRTFS:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.FloatDiv(
+							4,
+							il.Const(
+								4,
+								1
+							),
+							il.FloatSqrt(
+								4,
+								this->get_reg(il,insn->fields[0].value,4)
+							)
+						)
+					)
+				);
 			}
 			break;
 			case N850_SQRTFS:
@@ -3806,7 +3849,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 						il.Not(
 							4,
 							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_OVSZ
+							FLAG_WRITE_SZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -3925,7 +3977,24 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_RETI:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						NEC_SYSREG_PSW,
+						il.Register(
+							4,
+							NEC_SYSREG_EIPSW
+						)
+					)
+				);
+				il.AddInstruction(
+					il.Return(
+						il.Register(
+							4,
+							NEC_SYSREG_EIPC
+						)
+					)
+				);
 			}
 			break;
 			case N850_SAR:
@@ -4765,7 +4834,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_SWITCH:
 			{
-				// TODO does not work
+				// TODO does not work in 100% of cases
 				il.AddInstruction(
 					il.Jump(
 						il.Add(
@@ -4805,7 +4874,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 						)
 					)
 				);
-				il.MarkLabel(false_tag);
+				il.MarkLabel(end_tag);
 			}
 			break;
 			case N850_SXB:
@@ -5113,7 +5182,17 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_LDLW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[1].value,
+						il.Load(
+							4,
+							this->get_reg(il,insn->fields[0].value,4)
+						)
+
+					)
+				);
 			}
 			break;
 			case N850_LOOP:
@@ -5287,12 +5366,36 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_SATADDR:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// TODO saturation is not actually handled here 
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.Add(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
+							FLAG_WRITE_ALL
+						)
+					)
+				);
 			}
 			break;
 			case N850_SATSUBL:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// TODO saturation is not actually handled here 
+				il.AddInstruction(
+					il.SetRegister(
+						4,
+						insn->fields[2].value,
+						il.Sub(
+							4,
+							this->get_reg(il,insn->fields[1].value,4),
+							this->get_reg(il,insn->fields[0].value,4),
+							FLAG_WRITE_ALL
+						)
+					)
+				);
 			}
 			break;
 			case N850_SBF:
@@ -5489,12 +5592,20 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_SNOOZE:
 			{
+				// TODO intrinsics candidate
 				il.AddInstruction(il.Unimplemented());
 			}
 			break;
 			case N850_STCW:
 			{
-				il.AddInstruction(il.Unimplemented());
+				// TODO atomic operation not handled
+				il.AddInstruction(
+					il.Store(
+						4,
+						this->get_reg(il,insn->fields[1].value,4),
+						this->get_reg(il,insn->fields[0].value,4)
+					)
+				);
 			}
 			break;
 			case N850_LDHL:
