@@ -241,13 +241,19 @@ public:
 			FLAG_WRITE_NONE,
 			FLAG_WRITE_ALL,
 			FLAG_WRITE_OVSZ,
-			FLAG_WRITE_Z};
+			FLAG_WRITE_Z,
+			FLAG_WRITE_SZ,
+			FLAG_WRITE_CYSZ};
 	}
 
 	virtual string GetFlagWriteTypeName(uint32_t writeType) override
 	{
 		switch (writeType)
 		{
+		case FLAG_WRITE_CYSZ:
+			return "cysz";
+		case FLAG_WRITE_SZ:
+			return "sz";
 		case FLAG_WRITE_OVSZ:
 			return "ovsz";
 		case FLAG_WRITE_CYOVSZ:
@@ -265,6 +271,9 @@ public:
 	{
 		switch (writeType)
 		{
+		case FLAG_WRITE_CYSZ:
+			return vector<uint32_t>{
+				FLAG_CY, FLAG_Z, FLAG_S};
 		case FLAG_WRITE_SZ:
 			return vector<uint32_t>{
 				FLAG_Z, FLAG_S};
@@ -963,7 +972,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
 							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_OVSZ
+							FLAG_WRITE_SZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -985,7 +1003,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 									insn->fields[0].value
 								)
 							),
-							FLAG_WRITE_OVSZ
+							FLAG_WRITE_SZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -2092,7 +2119,11 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 				condition = il.CompareEqual(
 					1,
 					NEC_SYSREG_FPSR,
-					insn->fields[0].value
+					il.Const(
+						1,
+						insn->fields[0].value
+					)
+					
 				);
 				il.AddInstruction(il.If(condition,true_tag,false_tag));
 				il.MarkLabel(true_tag);
@@ -2577,7 +2608,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
 							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_OVSZ
+							FLAG_WRITE_SZ
 						)
 					)
 				);
@@ -2588,8 +2619,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 						il.ModSigned(
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
-							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_OVSZ
+							this->get_reg(il,insn->fields[0].value,4)
 						)
 					)
 				);
@@ -2623,7 +2653,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 								4,
 								this->get_reg(il,insn->fields[0].value,2)
 							),
-							FLAG_WRITE_OVSZ
+							FLAG_WRITE_SZ
 						)
 					)
 				);
@@ -2642,7 +2672,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 								4,
 								this->get_reg(il,insn->fields[0].value,2)
 							),
-							FLAG_WRITE_OVSZ
+							FLAG_WRITE_SZ
 						)
 					)
 				);
@@ -2656,8 +2686,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							il.SignExtend(
 								4,
 								this->get_reg(il,insn->fields[0].value,2)
-							),
-							FLAG_WRITE_OVSZ
+							)
 						)
 					)
 				);
@@ -2676,7 +2705,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 								4,
 								this->get_reg(il,insn->fields[0].value,2)
 							),
-							FLAG_WRITE_OVSZ
+							FLAG_WRITE_SZ
 						)
 					)
 				);
@@ -2690,8 +2719,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							il.ZeroExtend(
 								4,
 								this->get_reg(il,insn->fields[0].value,2)
-							),
-							FLAG_WRITE_OVSZ
+							)
 						)
 					)
 				);
@@ -2707,7 +2735,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
 							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_OVSZ
+							FLAG_WRITE_SZ
 						)
 					)
 				);
@@ -2718,8 +2746,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 						il.ModSigned(
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
-							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_OVSZ
+							this->get_reg(il,insn->fields[0].value,4)
 						)
 					)
 				);
@@ -2735,7 +2762,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
 							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_OVSZ
+							FLAG_WRITE_SZ
 						)
 					)
 				);
@@ -2746,8 +2773,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 						il.ModUnsigned(
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
-							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_OVSZ
+							this->get_reg(il,insn->fields[0].value,4)
 						)
 					)
 				);
@@ -2763,7 +2789,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
 							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_OVSZ
+							FLAG_WRITE_SZ
 						)
 					)
 				);
@@ -2774,8 +2800,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 						il.ModUnsigned(
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
-							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_OVSZ
+							this->get_reg(il,insn->fields[0].value,4)
 						)
 					)
 				);
@@ -3942,7 +3967,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
 							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_OVSZ
+							FLAG_WRITE_SZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -3964,7 +3998,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 									insn->fields[0].value
 								)
 							),
-							FLAG_WRITE_OVSZ
+							FLAG_WRITE_SZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -4007,7 +4050,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
 							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_CYOVSZ
+							FLAG_WRITE_CYSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -4029,7 +4081,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 									insn->fields[0].value
 								)
 							),
-							FLAG_WRITE_CYOVSZ
+							FLAG_WRITE_CYSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -4046,7 +4107,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
 							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_CYOVSZ
+							FLAG_WRITE_CYSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -4434,7 +4504,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
 							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_CYOVSZ
+							FLAG_WRITE_CYSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -4456,7 +4535,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 									insn->fields[0].value
 								)
 							),
-							FLAG_WRITE_CYOVSZ
+							FLAG_WRITE_CYSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -4486,7 +4574,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
 							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_CYOVSZ
+							FLAG_WRITE_CYSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -4508,7 +4605,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 									insn->fields[0].value
 								)
 							),
-							FLAG_WRITE_CYOVSZ
+							FLAG_WRITE_CYSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -4970,7 +5076,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 						4,
 						this->get_reg(il,insn->fields[1].value,4),
 						this->get_reg(il,insn->fields[0].value,4),
-						FLAG_WRITE_OVSZ
+						FLAG_WRITE_SZ
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
+						)
 					)
 				);
 			}
@@ -5124,7 +5239,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
 							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_OVSZ
+							FLAG_WRITE_SZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -5146,7 +5270,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 									insn->fields[0].value
 								)
 							),
-							FLAG_WRITE_OVSZ
+							FLAG_WRITE_SZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -5568,7 +5701,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
 							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_CYOVSZ
+							FLAG_WRITE_CYSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -5584,7 +5726,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
 							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_CYOVSZ
+							FLAG_WRITE_CYSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);
@@ -5795,7 +5946,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 							4,
 							this->get_reg(il,insn->fields[1].value,4),
 							this->get_reg(il,insn->fields[0].value,4),
-							FLAG_WRITE_CYOVSZ
+							FLAG_WRITE_CYSZ
+						)
+					)
+				);
+				il.AddInstruction(
+					il.SetFlag(
+						FLAG_OV,
+						il.Const(
+							4,
+							0
 						)
 					)
 				);

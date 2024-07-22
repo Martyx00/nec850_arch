@@ -109,6 +109,7 @@
 #define FLAG_WRITE_CYOVSZ 8
 #define FLAG_WRITE_Z 9
 #define FLAG_WRITE_SZ 10
+#define FLAG_WRITE_CYSZ 11
 
 enum cond {
     NEC850_CCCC_V = 0,
