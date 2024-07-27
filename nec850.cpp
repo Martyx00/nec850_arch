@@ -641,6 +641,10 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
                 return "_SynchornizeInstructionFetcher";
 			case SYNC_EXCEPTIONS:
                 return "_SynchornizeExceptions";
+			case CLL_INTRINSIC:
+                return "_ClearAtomicManipulationLink";
+			case SNOOZE_INTRINSIC:
+                return "_ClearAtomicManipulationLink";
 			case DI_INTRINSIC:
                 return "_DisableEILevelMaskableInterrupt";
 			case EI_INTRINSIC:
@@ -664,6 +668,8 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			SYNC_PIPELINE,
 			SYNC_INSN_FETCHER,
 			SYNC_EXCEPTIONS,
+			CLL_INTRINSIC,
+			SNOOZE_INTRINSIC,
 			DI_INTRINSIC,
 			EI_INTRINSIC,
 			HALT_INTRINSIC,
@@ -698,6 +704,10 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
                     return {  };
 				case SYNC_EXCEPTIONS:
                     return {  };
+				case CLL_INTRINSIC:
+                    return { };
+				case SNOOZE_INTRINSIC:
+                    return { };
 				case DI_INTRINSIC:
                     return {  };
 				case EI_INTRINSIC:
@@ -729,6 +739,10 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 				case SYNC_INSN_FETCHER:
                     return { };
 				case SYNC_EXCEPTIONS:
+                    return { };
+				case CLL_INTRINSIC:
+                    return { };
+				case SNOOZE_INTRINSIC:
                     return { };
 				case DI_INTRINSIC:
                     return {  };
@@ -1955,8 +1969,13 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_CLL:
 			{
-				// TODO INTRINSIC CANDIDATE
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Intrinsic(
+						{ }, // Outputs
+						CLL_INTRINSIC,
+						{ } // Inputs
+					)
+				);
 			}
 			break;
 			case N850_CLR1:
@@ -2085,7 +2104,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 						condition = il.FlagCondition(LLFC_POS);
 						break;
 					case 13:
-						condition = il.Unimplemented();
+						condition = il.CompareEqual(
+							4,
+							il.Flag(
+								FLAG_SAT
+							),
+							il.Const(
+								4,
+								1
+							)
+						);
 						break;
 					default:
 						break;
@@ -2208,7 +2236,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 						condition = il.FlagCondition(LLFC_POS);
 						break;
 					case 13:
-						condition = il.Unimplemented();
+						condition = il.CompareEqual(
+							4,
+							il.Flag(
+								FLAG_SAT
+							),
+							il.Const(
+								4,
+								1
+							)
+						);
 						break;
 					default:
 						break;
@@ -4015,6 +4052,7 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_PREPARE:
 			{
+				// TODO need some example to verify
 				il.AddInstruction(il.Unimplemented());
 			}
 			break;
@@ -4192,7 +4230,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 						condition = il.FlagCondition(LLFC_POS);
 						break;
 					case 13:
-						condition = il.Unimplemented();
+						condition = il.CompareEqual(
+							4,
+							il.Flag(
+								FLAG_SAT
+							),
+							il.Const(
+								4,
+								1
+							)
+						);
 						break;
 					default:
 						break;
@@ -4461,7 +4508,16 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 						condition = il.FlagCondition(LLFC_POS);
 						break;
 					case 13:
-						condition = il.Unimplemented();
+						condition = il.CompareEqual(
+							4,
+							il.Flag(
+								FLAG_SAT
+							),
+							il.Const(
+								4,
+								1
+							)
+						);
 						break;
 					default:
 						break;
@@ -4894,8 +4950,6 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_STSR:
 			{
-				if (addr == 0x16740a)
-					LogInfo("STSR");
 				// TODO test disass
 				il.AddInstruction(
 					il.SetRegister(
@@ -4940,7 +4994,6 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_SWITCH:
 			{
-				// TODO does not work in 100% of cases
 				il.AddInstruction(
 					il.Jump(
 						il.Add(
@@ -5743,8 +5796,13 @@ virtual std::string GetIntrinsicName (uint32_t intrinsic) override {
 			break;
 			case N850_SNOOZE:
 			{
-				// TODO intrinsics candidate
-				il.AddInstruction(il.Unimplemented());
+				il.AddInstruction(
+					il.Intrinsic(
+						{ }, // Outputs
+						SNOOZE_INTRINSIC,
+						{ } // Inputs
+					)
+				);
 			}
 			break;
 			case N850_STCW:

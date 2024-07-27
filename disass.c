@@ -159,7 +159,7 @@ const disass_insn_t instruction_list[] = {
     { "not1"   , N850_NOT1     ,    4, 0x7fdfffff  , 0x47c00000  , 3,   OP_TYPE_NOT, COND_NV, {{0x38000000,  27,  0,  0, 3, UNSIGNED, 0, TYPE_IMM}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 2, TYPE_REG_MEM}, {0x0000FFFF,  0,  0,  0, 16, SIGNED, 1, TYPE_MEM}, {0}, {0}}},
     { "not1"   , N850_NOT1R     ,    4, 0xffff00e2  , 0x07e000e2  , 2,   OP_TYPE_NOT, COND_NV, {{0xf8000000,  27,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0}, {0}, {0}}},
     { "ori"   , N850_ORI     ,    4, 0xfe9fffff  , 0x6800000  , 3,   OP_TYPE_OR, COND_NV, {{0xF8000000,  27,  0,  0, 5, UNSIGNED, 2, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x0000FFFF,  0,  0,  0, 16, UNSIGNED, 0, TYPE_IMM}, {0}, {0}}},
-    /*UNTESTED*/{ "prepare"   , N850_PREPARE     ,    4, 0x7bfffe1  , 0x7800001  , 2,   OP_TYPE_OR, COND_NV, {{0x003e0000,  17,  0,  0, 5, UNSIGNED, 1, TYPE_IMM}, {0x001ffe0,  5,  0,  0, 12, UNSIGNED, 0, TYPE_LIST}, {0}, {0}, {0}}}, // TODO ????
+    /*UNTESTED*/{ "prepare"   , N850_PREPARE     ,    4, 0x7bfffe1  , 0x7800001  , 2,   OP_TYPE_OR, COND_NV, {{0x003e0000,  17,  0,  0, 5, UNSIGNED, 1, TYPE_IMM}, {0x001ffe0,  0,  16,  0, 11, UNSIGNED, 0, TYPE_LIST},  {0x0010000,  16,  0,  0, 1, UNSIGNED, 0, TYPE_LIST}, {0}, {0}}}, // TODO ????
     /*UNTESTED*/{ "reti"   , N850_RETI     ,    4, 0x7e00140  , 0x7e00140  , 0,   OP_TYPE_RET, COND_NV, {{0}, {0}, {0}, {0}, {0}}},
     { "sar"   , N850_SAR     ,    4, 0xffff00a0  , 0x07e000a0  , 2,   OP_TYPE_SHR, COND_NV, {{0xf8000000,  27,  0,  0, 5, UNSIGNED, 1, TYPE_REG}, {0x001f0000,  16,  0,  0, 5, UNSIGNED, 0, TYPE_REG}, {0}, {0}, {0}}},
     
